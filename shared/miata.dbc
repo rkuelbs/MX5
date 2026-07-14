@@ -1,467 +1,145 @@
 VERSION "ECM CAN realtime data broadcast protocol 2016-02-17, section 2.1"
 
-NS_ :
-    NS_DESC_
-    CM_
-    BA_DEF_
-    BA_
-    VAL_
-    CAT_DEF_
-    CAT_
-    FILTER
-    BA_DEF_DEF_
-    EV_DATA_
-    ENVVAR_DATA_
-    SGTYPE_
-    SGTYPE_VAL_
-    BA_DEF_SGTYPE_
-    BA_SGTYPE_
-    SIG_TYPE_REF_
-    VAL_TABLE_
-    SIG_GROUP_
-    SIG_VALTYPE_
-    SIGTYPE_VALTYPE_
-    BO_TX_BU_
-    BA_DEF_REL_
-    BA_REL_
-    BA_DEF_DEF_REL_
-    BU_SG_REL_
-    BU_EV_REL_
-    BU_BO_REL_
-    SG_MUL_VAL_
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
 
 BS_:
 
-BU_: ECM RPI PDM
+BU_: WCM ECM RPI PDM
+
+
+BO_ 256 WCM_event_message: 4 WCM
+ SG_ wcm_event_length : 23|16@0+ (10,0) [0|655350] "ms"  RPI,PDM
+ SG_ wcm_event_id : 5|6@0+ (1,0) [0|63] ""  RPI,PDM
+ SG_ wcm_event_type : 7|2@0+ (1,0) [0|3] ""  RPI,PDM
+
+BO_ 257 WCM_status_message: 4 WCM
+ SG_ wcm_counter : 31|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
+ SG_ wcm_status : 23|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
+ SG_ wcm_boost_encoder : 15|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
+ SG_ wcm_inputs : 7|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
 
 BO_ 1520 MS_Realtime_Group_00: 8 ECM
- SG_ seconds : 7|16@0+ (1,0) [0|65535] "s" RPI
- SG_ pw1 : 23|16@0+ (0.001,0) [0|65.535] "ms" RPI
- SG_ pw2 : 39|16@0+ (0.001,0) [0|65.535] "ms" RPI
- SG_ rpm : 55|16@0+ (1,0) [0|65535] "RPM" RPI, PDM
+ SG_ seconds : 7|16@0+ (1,0) [0|65535] "s"  RPI
+ SG_ pw1 : 23|16@0+ (0.001,0) [0|65.535] "ms"  RPI
+ SG_ pw2 : 39|16@0+ (0.001,0) [0|65.535] "ms"  RPI
+ SG_ rpm : 55|16@0+ (1,0) [0|65535] "RPM"  RPI
 
 BO_ 1521 MS_Realtime_Group_01: 8 ECM
- SG_ adv_deg : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg BTDC" RPI
- SG_ squirt : 23|8@0+ (1,0) [0|255] "" RPI
- SG_ engine : 31|8@0+ (1,0) [0|255] "" RPI
- SG_ afrtgt1 : 39|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ afrtgt2 : 47|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ wbo2_en1 : 55|8@0+ (1,0) [0|255] "" RPI
- SG_ wbo2_en2 : 63|8@0+ (1,0) [0|255] "" RPI
+ SG_ adv_deg : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg BTDC"  RPI
+ SG_ squirt : 23|8@0+ (1,0) [0|255] ""  RPI
+ SG_ engine : 31|8@0+ (1,0) [0|255] ""  RPI
+ SG_ afrtgt1 : 39|8@0+ (0.1,0) [0|25.5] "AFR"  RPI
+ SG_ afrtgt2 : 47|8@0+ (0.1,0) [0|25.5] "AFR"  RPI
+ SG_ wbo2_en1 : 55|8@0+ (1,0) [0|255] ""  RPI
+ SG_ wbo2_en2 : 63|8@0+ (1,0) [0|255] ""  RPI
 
 BO_ 1522 MS_Realtime_Group_02: 8 ECM
- SG_ baro : 7|16@0- (0.1,0) [-3276.8|3276.7] "kPa" RPI
- SG_ map : 23|16@0- (0.1,0) [-3276.8|3276.7] "kPa" RPI
- SG_ mat : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ clt : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
+ SG_ baro : 7|16@0- (0.1,0) [-3276.8|3276.7] "kPa"  RPI
+ SG_ map : 23|16@0- (0.1,0) [-3276.8|3276.7] "kPa"  RPI
+ SG_ mat : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg F"  RPI
+ SG_ clt : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F"  RPI
 
 BO_ 1523 MS_Realtime_Group_03: 8 ECM
- SG_ tps : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ batt : 23|16@0- (0.1,0) [-3276.8|3276.7] "V" RPI
- SG_ afr1_old : 39|16@0- (0.1,0) [-3276.8|3276.7] "AFR" RPI
- SG_ afr2_old : 55|16@0- (0.1,0) [-3276.8|3276.7] "AFR" RPI
+ SG_ tps : 7|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ batt : 23|16@0- (0.1,0) [-3276.8|3276.7] "V"  RPI
+ SG_ afr1_old : 39|16@0- (0.1,0) [-3276.8|3276.7] "AFR"  RPI
+ SG_ afr2_old : 55|16@0- (0.1,0) [-3276.8|3276.7] "AFR"  RPI
 
 BO_ 1524 MS_Realtime_Group_04: 8 ECM
- SG_ knock : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ egocor1 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ egocor2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ aircor : 55|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
+ SG_ knock : 7|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ egocor1 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ egocor2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ aircor : 55|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
 
 BO_ 1525 MS_Realtime_Group_05: 8 ECM
- SG_ warmcor : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ tpsaccel : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ tpsfuelcut : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ barocor : 55|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
+ SG_ warmcor : 7|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ tpsaccel : 23|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ tpsfuelcut : 39|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ barocor : 55|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
 
 BO_ 1526 MS_Realtime_Group_06: 8 ECM
- SG_ totalcor : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ ve1 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ ve2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ iacstep : 55|16@0- (1,0) [-32768|32767] "step" RPI
+ SG_ totalcor : 7|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ ve1 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ ve2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ iacstep : 55|16@0- (1,0) [-32768|32767] "step"  RPI
 
 BO_ 1527 MS_Realtime_Group_07: 8 ECM
- SG_ cold_adv_deg : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ TPSdot : 23|16@0- (0.1,0) [-3276.8|3276.7] "%/s" RPI
- SG_ MAPdot : 39|16@0- (1,0) [-32768|32767] "kPa/s" RPI
- SG_ RPMdot : 55|16@0- (10,0) [-327680|327670] "RPM/s" RPI
+ SG_ cold_adv_deg : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
+ SG_ TPSdot : 23|16@0- (0.1,0) [-3276.8|3276.7] "%/s"  RPI
+ SG_ MAPdot : 39|16@0- (1,0) [-32768|32767] "kPa/s"  RPI
+ SG_ RPMdot : 55|16@0- (10,0) [-327680|327670] "RPM/s"  RPI
 
 BO_ 1528 MS_Realtime_Group_08: 8 ECM
- SG_ MAFload : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ fuelload : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ fuelcor : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ MAF : 55|16@0- (0.01,0) [-327.68|327.67] "g/s" RPI
-
-BO_ 1529 MS_Realtime_Group_09: 8 ECM
- SG_ egoV1 : 7|16@0- (0.01,0) [-327.68|327.67] "V" RPI
- SG_ egoV2 : 23|16@0- (0.01,0) [-327.68|327.67] "V" RPI
- SG_ dwell : 39|16@0+ (0.1,0) [0|6553.5] "ms" RPI
- SG_ dwell_trl : 55|16@0+ (0.1,0) [0|6553.5] "ms" RPI
+ SG_ MAFload : 7|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ fuelload : 23|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ fuelcor : 39|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ MAF : 55|16@0- (0.01,0) [-327.68|327.67] "g/s"  RPI
 
 BO_ 1530 MS_Realtime_Group_10: 8 ECM
- SG_ status1 : 7|8@0+ (1,0) [0|255] "" RPI
- SG_ status2 : 15|8@0+ (1,0) [0|255] "" RPI
- SG_ status3 : 23|8@0+ (1,0) [0|255] "" RPI
- SG_ status4 : 31|8@0+ (1,0) [0|255] "" RPI
- SG_ status5 : 39|16@0- (1,0) [-32768|32767] "" RPI
- SG_ status6 : 55|8@0+ (1,0) [0|255] "" RPI
- SG_ status7 : 63|8@0+ (1,0) [0|255] "" RPI
-
-BO_ 1531 MS_Realtime_Group_11: 8 ECM
- SG_ fuelload2 : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ ignload : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ ignload2 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ airtemp : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
-
-BO_ 1532 MS_Realtime_Group_12: 8 ECM
- SG_ wallfuel1 : 7|32@0- (0.01,0) [-21474836.48|21474836.47] "us" RPI
- SG_ wallfuel2 : 39|32@0- (0.01,0) [-21474836.48|21474836.47] "us" RPI
-
-BO_ 1533 MS_Realtime_Group_13: 8 ECM
- SG_ sensors1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors3 : 39|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors4 : 55|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
-
-BO_ 1534 MS_Realtime_Group_14: 8 ECM
- SG_ sensors5 : 7|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors6 : 23|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors7 : 39|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors8 : 55|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
-
-BO_ 1535 MS_Realtime_Group_15: 8 ECM
- SG_ sensors9 : 7|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors10 : 23|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors11 : 39|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors12 : 55|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
-
-BO_ 1536 MS_Realtime_Group_16: 8 ECM
- SG_ sensors13 : 7|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors14 : 23|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors15 : 39|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
- SG_ sensors16 : 55|16@0- (0.1,0) [-3276.8|3276.7] "" RPI
-
-BO_ 1537 MS_Realtime_Group_17: 8 ECM
- SG_ boost_targ_1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "kPa" RPI
- SG_ boost_targ_2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "kPa" RPI
- SG_ boostduty : 39|8@0+ (1,0) [0|255] "%" RPI
- SG_ boostduty2 : 47|8@0+ (1,0) [0|255] "%" RPI
- SG_ maf_volts : 55|16@0- (0.001,0) [-32.768|32.767] "V" RPI
-
-BO_ 1538 MS_Realtime_Group_18: 8 ECM
- SG_ pwseq1 : 7|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq2 : 23|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq3 : 39|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq4 : 55|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
-
-BO_ 1539 MS_Realtime_Group_19: 8 ECM
- SG_ pwseq5 : 7|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq6 : 23|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq7 : 39|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq8 : 55|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
-
-BO_ 1540 MS_Realtime_Group_20: 8 ECM
- SG_ pwseq9 : 7|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq10 : 23|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq11 : 39|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq12 : 55|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
-
-BO_ 1541 MS_Realtime_Group_21: 8 ECM
- SG_ pwseq13 : 7|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq14 : 23|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq15 : 39|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ pwseq16 : 55|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
-
-BO_ 1542 MS_Realtime_Group_22: 8 ECM
- SG_ egt1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt3 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt4 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
-
-BO_ 1543 MS_Realtime_Group_23: 8 ECM
- SG_ egt5 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt6 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt7 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt8 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
-
-BO_ 1544 MS_Realtime_Group_24: 8 ECM
- SG_ egt9 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt10 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt11 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt12 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
-
-BO_ 1545 MS_Realtime_Group_25: 8 ECM
- SG_ egt13 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt14 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt15 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ egt16 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
-
-BO_ 1546 MS_Realtime_Group_26: 8 ECM
- SG_ nitrous1_duty : 7|8@0+ (1,0) [0|255] "%" RPI
- SG_ nitrous2_duty : 15|8@0+ (1,0) [0|255] "%" RPI
- SG_ nitrous_timer_out : 23|16@0+ (0.001,0) [0|65.535] "s" RPI
- SG_ n2o_addfuel : 39|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
- SG_ n2o_retard : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
-
-BO_ 1547 MS_Realtime_Group_27: 8 ECM
- SG_ canpwmin1 : 7|16@0- (1,0) [-32768|32767] "" RPI
- SG_ canpwmin2 : 23|16@0- (1,0) [-32768|32767] "" RPI
- SG_ canpwmin3 : 39|16@0- (1,0) [-32768|32767] "" RPI
- SG_ canpwmin4 : 55|16@0- (1,0) [-32768|32767] "" RPI
-
-BO_ 1548 MS_Realtime_Group_28: 8 ECM
- SG_ cl_idle_targ_rpm : 7|16@0+ (1,0) [0|65535] "RPM" RPI
- SG_ tpsadc : 23|16@0- (1,0) [-32768|32767] "" RPI
- SG_ eaeload : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ afrload : 55|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
-
-BO_ 1549 MS_Realtime_Group_29: 8 ECM
- SG_ EAEfcor1 : 7|16@0+ (0.1,0) [0|6553.5] "%" RPI
- SG_ EAEfcor2 : 23|16@0+ (0.1,0) [0|6553.5] "%" RPI
- SG_ VSS1dot : 39|16@0- (0.1,0) [-3276.8|3276.7] "m/s2" RPI
- SG_ VSS2dot : 55|16@0- (0.1,0) [-3276.8|3276.7] "m/s2" RPI
-
-BO_ 1550 MS_Realtime_Group_30: 8 ECM
- SG_ accelx : 7|16@0- (0.001,0) [-32.768|32.767] "m/s2" RPI
- SG_ accely : 23|16@0- (0.001,0) [-32.768|32.767] "m/s2" RPI
- SG_ accelz : 39|16@0- (0.001,0) [-32.768|32.767] "m/s2" RPI
- SG_ stream_level : 55|8@0+ (1,0) [0|255] "" RPI
- SG_ water_duty : 63|8@0+ (1,0) [0|255] "%" RPI
-
-BO_ 1551 MS_Realtime_Group_31: 8 ECM
- SG_ AFR1 : 7|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR2 : 15|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR3 : 23|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR4 : 31|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR5 : 39|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR6 : 47|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR7 : 55|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR8 : 63|8@0+ (0.1,0) [0|25.5] "AFR" RPI
-
-BO_ 1552 MS_Realtime_Group_32: 8 ECM
- SG_ AFR9 : 7|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR10 : 15|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR11 : 23|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR12 : 31|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR13 : 39|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR14 : 47|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR15 : 55|8@0+ (0.1,0) [0|25.5] "AFR" RPI
- SG_ AFR16 : 63|8@0+ (0.1,0) [0|25.5] "AFR" RPI
-
-BO_ 1553 MS_Realtime_Group_33: 8 ECM
- SG_ duty_pwm_1 : 7|8@0+ (1,0) [0|255] "%" RPI
- SG_ duty_pwm_2 : 15|8@0+ (1,0) [0|255] "%" RPI
- SG_ duty_pwm_3 : 23|8@0+ (1,0) [0|255] "%" RPI
- SG_ duty_pwm_4 : 31|8@0+ (1,0) [0|255] "%" RPI
- SG_ duty_pwm_5 : 39|8@0+ (1,0) [0|255] "%" RPI
- SG_ duty_pwm_6 : 47|8@0+ (1,0) [0|255] "%" RPI
- SG_ gear : 55|8@0- (1,0) [-128|127] "" RPI
- SG_ status8 : 63|8@0+ (1,0) [0|255] "" RPI
-
-BO_ 1554 MS_Realtime_Group_34: 8 ECM
- SG_ EGOv1 : 7|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv2 : 23|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv3 : 39|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv4 : 55|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
-
-BO_ 1555 MS_Realtime_Group_35: 8 ECM
- SG_ EGOv5 : 7|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv6 : 23|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv7 : 39|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv8 : 55|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
-
-BO_ 1556 MS_Realtime_Group_36: 8 ECM
- SG_ EGOv9 : 7|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv10 : 23|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv11 : 39|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv12 : 55|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
-
-BO_ 1557 MS_Realtime_Group_37: 8 ECM
- SG_ EGOv13 : 7|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv14 : 23|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv15 : 39|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
- SG_ EGOv16 : 55|16@0- (0.00489,0) [-160.23552|160.23063] "V" RPI
-
-BO_ 1558 MS_Realtime_Group_38: 8 ECM
- SG_ EGOcor1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor3 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor4 : 55|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
-
-BO_ 1559 MS_Realtime_Group_39: 8 ECM
- SG_ EGOcor5 : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor6 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor7 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor8 : 55|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
-
-BO_ 1560 MS_Realtime_Group_40: 8 ECM
- SG_ EGOcor9 : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor10 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor11 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor12 : 55|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
-
-BO_ 1561 MS_Realtime_Group_41: 8 ECM
- SG_ EGOcor13 : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor14 : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor15 : 39|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ EGOcor16 : 55|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
-
-BO_ 1562 MS_Realtime_Group_42: 8 ECM
- SG_ VSS1 : 7|16@0+ (0.1,0) [0|6553.5] "m/s" RPI
- SG_ VSS2 : 23|16@0+ (0.1,0) [0|6553.5] "m/s" RPI
- SG_ VSS3 : 39|16@0+ (0.1,0) [0|6553.5] "m/s" RPI
- SG_ VSS4 : 55|16@0+ (0.1,0) [0|6553.5] "m/s" RPI
-
-BO_ 1563 MS_Realtime_Group_43: 8 ECM
- SG_ synccnt : 7|8@0+ (1,0) [0|255] "" RPI
- SG_ syncreason : 15|8@0+ (1,0) [0|255] "" RPI
- SG_ sd_filenum : 23|16@0+ (1,0) [0|65535] "" RPI
- SG_ sd_error : 39|8@0+ (1,0) [0|255] "" RPI
- SG_ sd_phase : 47|8@0+ (1,0) [0|255] "" RPI
- SG_ sd_status : 55|8@0+ (1,0) [0|255] "" RPI
- SG_ timing_err : 63|8@0- (1,0) [-128|127] "%" RPI
-
-BO_ 1564 MS_Realtime_Group_44: 8 ECM
- SG_ vvt_ang1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ vvt_ang2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ vvt_ang3 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ vvt_ang4 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
-
-BO_ 1565 MS_Realtime_Group_45: 8 ECM
- SG_ vvt_target1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ vvt_target2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ vvt_target3 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ vvt_target4 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
-
-BO_ 1566 MS_Realtime_Group_46: 8 ECM
- SG_ vvt_duty1 : 7|8@0+ (0.392,0) [0|99.96] "%" RPI
- SG_ vvt_duty2 : 15|8@0+ (0.392,0) [0|99.96] "%" RPI
- SG_ vvt_duty3 : 23|8@0+ (0.392,0) [0|99.96] "%" RPI
- SG_ vvt_duty4 : 31|8@0+ (0.392,0) [0|99.96] "%" RPI
- SG_ inj_timing_pri : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg BTDC" RPI
- SG_ inj_timing_sec : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg BTDC" RPI
+ SG_ status1 : 7|8@0+ (1,0) [0|255] ""  RPI
+ SG_ status2 : 15|8@0+ (1,0) [0|255] ""  RPI
+ SG_ status3 : 23|8@0+ (1,0) [0|255] ""  RPI
+ SG_ status4 : 31|8@0+ (1,0) [0|255] ""  RPI
+ SG_ status5 : 39|16@0- (1,0) [-32768|32767] ""  RPI
+ SG_ status6 : 55|8@0+ (1,0) [0|255] ""  RPI
+ SG_ status7 : 63|8@0+ (1,0) [0|255] ""  RPI
 
 BO_ 1567 MS_Realtime_Group_47: 8 ECM
- SG_ fuel_pct : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ tps_accel : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ SS1 : 39|16@0+ (10,0) [0|655350] "RPM" RPI
- SG_ SS2 : 55|16@0+ (10,0) [0|655350] "RPM" RPI
-
-BO_ 1568 MS_Realtime_Group_48: 8 ECM
- SG_ knock_cyl1 : 7|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl2 : 15|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl3 : 23|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl4 : 31|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl5 : 39|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl6 : 47|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl7 : 55|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl8 : 63|8@0+ (0.4,0) [0|102] "%" RPI
-
-BO_ 1569 MS_Realtime_Group_49: 8 ECM
- SG_ knock_cyl9 : 7|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl10 : 15|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl11 : 23|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl12 : 31|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl13 : 39|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl14 : 47|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl15 : 55|8@0+ (0.4,0) [0|102] "%" RPI
- SG_ knock_cyl16 : 63|8@0+ (0.4,0) [0|102] "%" RPI
-
-BO_ 1570 MS_Realtime_Group_50: 8 ECM
- SG_ map_accel : 7|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ total_accel : 23|16@0- (0.1,0) [-3276.8|3276.7] "%" RPI
- SG_ launch_timer : 39|16@0+ (0.001,0) [0|65.535] "s" RPI
- SG_ launch_retard : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
-
-BO_ 1571 MS_Realtime_Group_51: 8 ECM
- SG_ porta : 7|8@0+ (1,0) [0|255] "" RPI
- SG_ portb : 15|8@0+ (1,0) [0|255] "" RPI
- SG_ porteh : 23|8@0+ (1,0) [0|255] "" RPI
- SG_ portk : 31|8@0+ (1,0) [0|255] "" RPI
- SG_ portmj : 39|8@0+ (1,0) [0|255] "" RPI
- SG_ portp : 47|8@0+ (1,0) [0|255] "" RPI
- SG_ portt : 55|8@0+ (1,0) [0|255] "" RPI
- SG_ cel_errorcode : 63|8@0+ (1,0) [0|255] "" RPI
-
-BO_ 1572 MS_Realtime_Group_52: 8 ECM
- SG_ canin1 : 7|8@0+ (1,0) [0|255] "" RPI
- SG_ canin2 : 15|8@0+ (1,0) [0|255] "" RPI
- SG_ canout : 23|8@0+ (1,0) [0|255] "" RPI
- SG_ knk_rtd : 31|8@0+ (0.1,0) [0|25.5] "deg" RPI
- SG_ fuelflow : 39|16@0+ (1,0) [0|65535] "cc/min" RPI
- SG_ fuelcons : 55|16@0+ (1,0) [0|65535] "l/km" RPI
-
-BO_ 1573 MS_Realtime_Group_53: 8 ECM
- SG_ fuel_press1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "kPa" RPI
- SG_ fuel_press2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "kPa" RPI
- SG_ fuel_temp1 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
- SG_ fuel_temp2 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg F" RPI
-
-BO_ 1574 MS_Realtime_Group_54: 8 ECM
- SG_ batt_cur : 7|16@0- (0.1,0) [-3276.8|3276.7] "A" RPI
- SG_ cel_status : 23|16@0+ (1,0) [0|65535] "" RPI
- SG_ fp_duty : 39|8@0+ (0.392,0) [0|99.96] "%" RPI
- SG_ alt_duty : 47|8@0+ (1,0) [0|255] "%" RPI
- SG_ load_duty : 55|8@0+ (1,0) [0|255] "%" RPI
- SG_ alt_targv : 63|8@0+ (0.1,0) [0|25.5] "V" RPI
-
-BO_ 1575 MS_Realtime_Group_55: 8 ECM
- SG_ looptime : 7|16@0+ (1,0) [0|65535] "us" RPI
- SG_ fueltemp_cor : 23|16@0+ (0.1,0) [0|6553.5] "%" RPI
- SG_ fuelpress_cor : 39|16@0+ (0.1,0) [0|6553.5] "%" RPI
- SG_ ltt_cor : 55|8@0- (0.1,0) [-12.8|12.7] "%" RPI
- SG_ sp1 : 63|8@0+ (1,0) [0|255] "" RPI
-
-BO_ 1576 MS_Realtime_Group_56: 8 ECM
- SG_ tc_retard : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ cel_retard : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ fc_retard : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ als_addfuel : 55|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
+ SG_ fuel_pct : 7|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ tps_accel : 23|16@0- (0.1,0) [-3276.8|3276.7] "%"  RPI
+ SG_ SS1 : 39|16@0+ (10,0) [0|655350] "RPM"  RPI
+ SG_ SS2 : 55|16@0+ (10,0) [0|655350] "RPM"  RPI
 
 BO_ 1577 MS_Realtime_Group_57: 8 ECM
- SG_ base_advance : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ idle_cor_advance : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ mat_retard : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ flex_advance : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
+ SG_ base_advance : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
+ SG_ idle_cor_advance : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
+ SG_ mat_retard : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
+ SG_ flex_advance : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
 
 BO_ 1578 MS_Realtime_Group_58: 8 ECM
- SG_ adv1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ adv2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ adv3 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ adv4 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
+ SG_ adv1 : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
+ SG_ adv2 : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
+ SG_ adv3 : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
+ SG_ adv4 : 55|16@0- (0.1,0) [-3276.8|3276.7] "deg"  RPI
 
-BO_ 1579 MS_Realtime_Group_59: 8 ECM
- SG_ revlim_retard : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ als_timing : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ ext_advance : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ deadtime1 : 55|16@0- (0.001,0) [-32.768|32.767] "ms" RPI
 
-BO_ 1580 MS_Realtime_Group_60: 8 ECM
- SG_ launch_timing : 7|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ step3_timing : 23|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ vsslaunch_retard : 39|16@0- (0.1,0) [-3276.8|3276.7] "deg" RPI
- SG_ cel_status2 : 55|16@0+ (1,0) [0|65535] "" RPI
-
-BO_ 1581 MS_Realtime_Group_61: 8 ECM
- SG_ gps_latdeg : 7|8@0- (1,0) [-128|127] "deg" RPI
- SG_ gps_latmin : 15|8@0+ (1,0) [0|255] "min" RPI
- SG_ gps_latmmin : 23|16@0+ (1,0) [0|65535] "mmin" RPI
- SG_ gps_londeg : 39|8@0+ (1,0) [0|255] "deg" RPI
- SG_ gps_lonmin : 47|8@0+ (1,0) [0|255] "min" RPI
- SG_ gps_lonmmin : 55|16@0+ (1,0) [0|65535] "mmin" RPI
-
-BO_ 1582 MS_Realtime_Group_62: 8 ECM
- SG_ gps_outstatus : 7|8@0+ (1,0) [0|255] "" RPI
- SG_ gps_altk : 15|8@0- (1,0) [-128|127] "km" RPI
- SG_ gps_altm : 23|16@0+ (1,0) [0|65535] "m" RPI
- SG_ gps_speed : 39|16@0+ (0.1,0) [0|6553.5] "m/s" RPI
- SG_ gps_course : 55|16@0+ (0.1,0) [0|6553.5] "deg" RPI
-
-BO_ 1583 MS_Realtime_Group_63: 8 ECM
- SG_ generic_pid_duty1 : 7|8@0+ (0.392,0) [0|99.96] "%" RPI
- SG_ generic_pid_duty2 : 15|8@0+ (0.392,0) [0|99.96] "%" RPI
 
 CM_ "ECM advanced real-time data broadcast. 11-bit CAN, 500 kbit/s, big-endian. Default base identifier 1520 decimal (0x5F0); message identifier = base + group. Broadcast rates are user-configurable and therefore are not encoded as cycle-time attributes.";
-CM_ BO_ 1570 "Source table appears to print launch_timer at group offset 5, but total offset 404 and non-overlapping 8-byte packing require offset 4; this DBC uses offset 4.";
+CM_ SG_ 256 wcm_event_id "id of button pressed/released";
+CM_ SG_ 256 wcm_event_type "0 = released, 1=pressed";
+CM_ SG_ 257 wcm_counter "counter for wcm status messages";
+CM_ SG_ 257 wcm_status "status bitmask for wcm";
+CM_ SG_ 257 wcm_boost_encoder "boost control dial position";
+CM_ SG_ 257 wcm_inputs "bitmask of WCM button status";
 CM_ SG_ 1520 seconds "Seconds ECU has been on; MS2 support: yes.";
 CM_ SG_ 1520 pw1 "Main pulsewidth bank 1; MS2 support: yes.";
 CM_ SG_ 1520 pw2 "Main pulsewidth bank 2; MS2 support: yes.";
@@ -501,10 +179,6 @@ CM_ SG_ 1528 MAFload "Synthetic load from MAF; MS2 support: yes.";
 CM_ SG_ 1528 fuelload "Load used for fuel table lookup; MS2 support: yes.";
 CM_ SG_ 1528 fuelcor "Adjustment to fuel from Flex; MS2 support: yes.";
 CM_ SG_ 1528 MAF "Mass air flow (650 g/s scaling shown); MS2 support: yes.";
-CM_ SG_ 1529 egoV1 "Voltage from O2 #1 (deprecated on MS3); MS2 support: yes.";
-CM_ SG_ 1529 egoV2 "Voltage from O2 #2 (deprecated on MS3); MS2 support: yes.";
-CM_ SG_ 1529 dwell "Main ignition dwell; MS2 support: yes.";
-CM_ SG_ 1529 dwell_trl "Trailing ignition dwell; MS2 support: yes.";
 CM_ SG_ 1530 status1 "ECU status bitfield; MS2 support: yes.";
 CM_ SG_ 1530 status2 "ECU status bitfield; MS2 support: yes.";
 CM_ SG_ 1530 status3 "ECU status bitfield; MS2 support: yes.";
@@ -512,225 +186,10 @@ CM_ SG_ 1530 status4 "Not typically used; MS2 support: yes.";
 CM_ SG_ 1530 status5 "Not typically used; MS2 support: yes.";
 CM_ SG_ 1530 status6 "ECU status bitfield; MS2 support: no.";
 CM_ SG_ 1530 status7 "ECU status bitfield; MS2 support: no.";
-CM_ SG_ 1531 fuelload2 "Load used for fuelling on modified table; MS2 support: yes.";
-CM_ SG_ 1531 ignload "Load used for ignition table lookup; MS2 support: yes.";
-CM_ SG_ 1531 ignload2 "Load used for modifier ignition table lookup; MS2 support: yes.";
-CM_ SG_ 1531 airtemp "Estimated intake air temperature; MS2 support: yes.";
-CM_ SG_ 1532 wallfuel1 "Calculated fuel volume on intake walls from EAE; MS2 support: yes.";
-CM_ SG_ 1532 wallfuel2 "Second EAE wall-fuel channel; MS2 support: yes.";
-CM_ SG_ 1533 sensors1 "Generic sensor input 1 (gpioadc0 on MS2); MS2 support: yes.";
-CM_ SG_ 1533 sensors2 "Generic sensor input 2 (gpioadc1 on MS2); MS2 support: yes.";
-CM_ SG_ 1533 sensors3 "Generic sensor input 3 (gpioadc2 on MS2); MS2 support: yes.";
-CM_ SG_ 1533 sensors4 "Generic sensor input 4 (gpioadc3 on MS2); MS2 support: yes.";
-CM_ SG_ 1534 sensors5 "Generic sensor input 5 (gpioadc4 on MS2); MS2 support: yes.";
-CM_ SG_ 1534 sensors6 "Generic sensor input 6 (gpioadc5 on MS2); MS2 support: yes.";
-CM_ SG_ 1534 sensors7 "Generic sensor input 7 (gpioadc6 on MS2); MS2 support: yes.";
-CM_ SG_ 1534 sensors8 "Generic sensor input 8 (gpioadc7 on MS2); MS2 support: yes.";
-CM_ SG_ 1535 sensors9 "Generic sensor input 9 (adc6 on MS2); MS2 support: yes.";
-CM_ SG_ 1535 sensors10 "Generic sensor input 10 (adc7 on MS2); MS2 support: yes.";
-CM_ SG_ 1535 sensors11 "Generic sensor input 11; MS2 support: no.";
-CM_ SG_ 1535 sensors12 "Generic sensor input 12; MS2 support: no.";
-CM_ SG_ 1536 sensors13 "Generic sensor input 13; MS2 support: no.";
-CM_ SG_ 1536 sensors14 "Generic sensor input 14; MS2 support: no.";
-CM_ SG_ 1536 sensors15 "Generic sensor input 15; MS2 support: no.";
-CM_ SG_ 1536 sensors16 "Generic sensor input 16; MS2 support: no.";
-CM_ SG_ 1537 boost_targ_1 "Target boost - channel 1; MS2 support: yes.";
-CM_ SG_ 1537 boost_targ_2 "Target boost - channel 2; MS2 support: no.";
-CM_ SG_ 1537 boostduty "Duty cycle on boost solenoid 1; MS2 support: yes.";
-CM_ SG_ 1537 boostduty2 "Duty cycle on boost solenoid 2; MS2 support: no.";
-CM_ SG_ 1537 maf_volts "MAF voltage (synthesized for frequency MAFs); MS2 support: yes.";
-CM_ SG_ 1538 pwseq1 "Sequential pulsewidth for cylinder 1; MS2 support: yes.";
-CM_ SG_ 1538 pwseq2 "Sequential pulsewidth for cylinder 2; MS2 support: yes.";
-CM_ SG_ 1538 pwseq3 "Sequential pulsewidth for cylinder 3; MS2 support: yes.";
-CM_ SG_ 1538 pwseq4 "Sequential pulsewidth for cylinder 4; MS2 support: yes.";
-CM_ SG_ 1539 pwseq5 "Sequential pulsewidth for cylinder 5; MS2 support: no.";
-CM_ SG_ 1539 pwseq6 "Sequential pulsewidth for cylinder 6; MS2 support: no.";
-CM_ SG_ 1539 pwseq7 "Sequential pulsewidth for cylinder 7; MS2 support: no.";
-CM_ SG_ 1539 pwseq8 "Sequential pulsewidth for cylinder 8; MS2 support: no.";
-CM_ SG_ 1540 pwseq9 "Sequential pulsewidth for cylinder 9; MS2 support: no.";
-CM_ SG_ 1540 pwseq10 "Sequential pulsewidth for cylinder 10; MS2 support: no.";
-CM_ SG_ 1540 pwseq11 "Sequential pulsewidth for cylinder 11; MS2 support: no.";
-CM_ SG_ 1540 pwseq12 "Sequential pulsewidth for cylinder 12; MS2 support: no.";
-CM_ SG_ 1541 pwseq13 "Sequential pulsewidth for cylinder 13; MS2 support: no.";
-CM_ SG_ 1541 pwseq14 "Sequential pulsewidth for cylinder 14; MS2 support: no.";
-CM_ SG_ 1541 pwseq15 "Sequential pulsewidth for cylinder 15; MS2 support: no.";
-CM_ SG_ 1541 pwseq16 "Sequential pulsewidth for cylinder 16; MS2 support: no.";
-CM_ SG_ 1542 egt1 "EGT 1; MS2 support: no.";
-CM_ SG_ 1542 egt2 "EGT 2; MS2 support: no.";
-CM_ SG_ 1542 egt3 "EGT 3; MS2 support: no.";
-CM_ SG_ 1542 egt4 "EGT 4; MS2 support: no.";
-CM_ SG_ 1543 egt5 "EGT 5; MS2 support: no.";
-CM_ SG_ 1543 egt6 "EGT 6; MS2 support: no.";
-CM_ SG_ 1543 egt7 "EGT 7; MS2 support: no.";
-CM_ SG_ 1543 egt8 "EGT 8; MS2 support: no.";
-CM_ SG_ 1544 egt9 "EGT 9; MS2 support: no.";
-CM_ SG_ 1544 egt10 "EGT 10; MS2 support: no.";
-CM_ SG_ 1544 egt11 "EGT 11; MS2 support: no.";
-CM_ SG_ 1544 egt12 "EGT 12; MS2 support: no.";
-CM_ SG_ 1545 egt13 "EGT 13; MS2 support: no.";
-CM_ SG_ 1545 egt14 "EGT 14; MS2 support: no.";
-CM_ SG_ 1545 egt15 "EGT 15; MS2 support: no.";
-CM_ SG_ 1545 egt16 "EGT 16; MS2 support: no.";
-CM_ SG_ 1546 nitrous1_duty "Duty cycle to nitrous solenoid 1; MS2 support: no.";
-CM_ SG_ 1546 nitrous2_duty "Duty cycle to nitrous solenoid 2; MS2 support: no.";
-CM_ SG_ 1546 nitrous_timer_out "Timer used internally for nitrous system; MS2 support: no.";
-CM_ SG_ 1546 n2o_addfuel "Fuel pulsewidth added due to nitrous system; MS2 support: yes.";
-CM_ SG_ 1546 n2o_retard "Timing retard due to nitrous system; MS2 support: yes.";
-CM_ SG_ 1547 canpwmin1 "PWM period 1 from remote board; MS2 support: yes.";
-CM_ SG_ 1547 canpwmin2 "PWM period 2 from remote board; MS2 support: yes.";
-CM_ SG_ 1547 canpwmin3 "PWM period 3 from remote board; MS2 support: yes.";
-CM_ SG_ 1547 canpwmin4 "PWM period 4 from remote board; MS2 support: yes.";
-CM_ SG_ 1548 cl_idle_targ_rpm "Closed-loop idle target RPM; MS2 support: yes.";
-CM_ SG_ 1548 tpsadc "ADC count from TPS; MS2 support: yes.";
-CM_ SG_ 1548 eaeload "Load used for EAE calculation; MS2 support: yes.";
-CM_ SG_ 1548 afrload "Load used for AFR table lookups; MS2 support: yes.";
-CM_ SG_ 1549 EAEfcor1 "Fuel correction from EAE - channel 1; MS2 support: yes.";
-CM_ SG_ 1549 EAEfcor2 "Fuel correction from EAE - channel 2; MS2 support: yes.";
-CM_ SG_ 1549 VSS1dot "Rate of change of VSS1; MS2 support: no.";
-CM_ SG_ 1549 VSS2dot "Rate of change of VSS2; MS2 support: no.";
-CM_ SG_ 1550 accelx "External accelerometer X; MS2 support: no.";
-CM_ SG_ 1550 accely "External accelerometer Y; MS2 support: no.";
-CM_ SG_ 1550 accelz "External accelerometer Z; MS2 support: no.";
-CM_ SG_ 1550 stream_level "Volume level on audio input; MS2 support: no.";
-CM_ SG_ 1550 water_duty "Duty cycle to water injection solenoid; MS2 support: no.";
-CM_ SG_ 1551 AFR1 "AFR cylinder 1; MS2 support: no.";
-CM_ SG_ 1551 AFR2 "AFR cylinder 2; MS2 support: no.";
-CM_ SG_ 1551 AFR3 "AFR cylinder 3; MS2 support: no.";
-CM_ SG_ 1551 AFR4 "AFR cylinder 4; MS2 support: no.";
-CM_ SG_ 1551 AFR5 "AFR cylinder 5; MS2 support: no.";
-CM_ SG_ 1551 AFR6 "AFR cylinder 6; MS2 support: no.";
-CM_ SG_ 1551 AFR7 "AFR cylinder 7; MS2 support: no.";
-CM_ SG_ 1551 AFR8 "AFR cylinder 8; MS2 support: no.";
-CM_ SG_ 1552 AFR9 "AFR cylinder 9; MS2 support: no.";
-CM_ SG_ 1552 AFR10 "AFR cylinder 10; MS2 support: no.";
-CM_ SG_ 1552 AFR11 "AFR cylinder 11; MS2 support: no.";
-CM_ SG_ 1552 AFR12 "AFR cylinder 12; MS2 support: no.";
-CM_ SG_ 1552 AFR13 "AFR cylinder 13; MS2 support: no.";
-CM_ SG_ 1552 AFR14 "AFR cylinder 14; MS2 support: no.";
-CM_ SG_ 1552 AFR15 "AFR cylinder 15; MS2 support: no.";
-CM_ SG_ 1552 AFR16 "AFR cylinder 16; MS2 support: no.";
-CM_ SG_ 1553 duty_pwm_1 "Generic PWM duty 1; MS2 support: no.";
-CM_ SG_ 1553 duty_pwm_2 "Generic PWM duty 2; MS2 support: no.";
-CM_ SG_ 1553 duty_pwm_3 "Generic PWM duty 3; MS2 support: no.";
-CM_ SG_ 1553 duty_pwm_4 "Generic PWM duty 4; MS2 support: no.";
-CM_ SG_ 1553 duty_pwm_5 "Generic PWM duty 5; MS2 support: no.";
-CM_ SG_ 1553 duty_pwm_6 "Generic PWM duty 6; MS2 support: no.";
-CM_ SG_ 1553 gear "Current gear selected; MS2 support: no.";
-CM_ SG_ 1553 status8 "Engine status bitfield; MS2 support: no.";
-CM_ SG_ 1554 EGOv1 "Voltage from O2 cylinder 1; MS2 support: no.";
-CM_ SG_ 1554 EGOv2 "Voltage from O2 cylinder 2; MS2 support: no.";
-CM_ SG_ 1554 EGOv3 "Voltage from O2 cylinder 3; MS2 support: no.";
-CM_ SG_ 1554 EGOv4 "Voltage from O2 cylinder 4; MS2 support: no.";
-CM_ SG_ 1555 EGOv5 "Voltage from O2 cylinder 5; MS2 support: no.";
-CM_ SG_ 1555 EGOv6 "Voltage from O2 cylinder 6; MS2 support: no.";
-CM_ SG_ 1555 EGOv7 "Voltage from O2 cylinder 7; MS2 support: no.";
-CM_ SG_ 1555 EGOv8 "Voltage from O2 cylinder 8; MS2 support: no.";
-CM_ SG_ 1556 EGOv9 "Voltage from O2 cylinder 9; MS2 support: no.";
-CM_ SG_ 1556 EGOv10 "Voltage from O2 cylinder 10; MS2 support: no.";
-CM_ SG_ 1556 EGOv11 "Voltage from O2 cylinder 11; MS2 support: no.";
-CM_ SG_ 1556 EGOv12 "Voltage from O2 cylinder 12; MS2 support: no.";
-CM_ SG_ 1557 EGOv13 "Voltage from O2 cylinder 13; MS2 support: no.";
-CM_ SG_ 1557 EGOv14 "Voltage from O2 cylinder 14; MS2 support: no.";
-CM_ SG_ 1557 EGOv15 "Voltage from O2 cylinder 15; MS2 support: no.";
-CM_ SG_ 1557 EGOv16 "Voltage from O2 cylinder 16; MS2 support: no.";
-CM_ SG_ 1558 EGOcor1 "EGO correction cylinder 1; MS2 support: no.";
-CM_ SG_ 1558 EGOcor2 "EGO correction cylinder 2; MS2 support: no.";
-CM_ SG_ 1558 EGOcor3 "EGO correction cylinder 3; MS2 support: no.";
-CM_ SG_ 1558 EGOcor4 "EGO correction cylinder 4; MS2 support: no.";
-CM_ SG_ 1559 EGOcor5 "EGO correction cylinder 5; MS2 support: no.";
-CM_ SG_ 1559 EGOcor6 "EGO correction cylinder 6; MS2 support: no.";
-CM_ SG_ 1559 EGOcor7 "EGO correction cylinder 7; MS2 support: no.";
-CM_ SG_ 1559 EGOcor8 "EGO correction cylinder 8; MS2 support: no.";
-CM_ SG_ 1560 EGOcor9 "EGO correction cylinder 9; MS2 support: no.";
-CM_ SG_ 1560 EGOcor10 "EGO correction cylinder 10; MS2 support: no.";
-CM_ SG_ 1560 EGOcor11 "EGO correction cylinder 11; MS2 support: no.";
-CM_ SG_ 1560 EGOcor12 "EGO correction cylinder 12; MS2 support: no.";
-CM_ SG_ 1561 EGOcor13 "EGO correction cylinder 13; MS2 support: no.";
-CM_ SG_ 1561 EGOcor14 "EGO correction cylinder 14; MS2 support: no.";
-CM_ SG_ 1561 EGOcor15 "EGO correction cylinder 15; MS2 support: no.";
-CM_ SG_ 1561 EGOcor16 "EGO correction cylinder 16; MS2 support: no.";
-CM_ SG_ 1562 VSS1 "Vehicle speed 1; MS2 support: no.";
-CM_ SG_ 1562 VSS2 "Vehicle speed 2; MS2 support: no.";
-CM_ SG_ 1562 VSS3 "Vehicle speed 3; MS2 support: no.";
-CM_ SG_ 1562 VSS4 "Vehicle speed 4; MS2 support: no.";
-CM_ SG_ 1563 synccnt "Sync-loss counter; MS2 support: yes.";
-CM_ SG_ 1563 syncreason "Sync-loss reason code; MS2 support: yes.";
-CM_ SG_ 1563 sd_filenum "SD card file number; MS2 support: no.";
-CM_ SG_ 1563 sd_error "SD card error number; MS2 support: no.";
-CM_ SG_ 1563 sd_phase "SD card internal code; MS2 support: no.";
-CM_ SG_ 1563 sd_status "SD card status bitfield; MS2 support: no.";
-CM_ SG_ 1563 timing_err "Calculated error in ignition timing; MS2 support: yes.";
-CM_ SG_ 1564 vvt_ang1 "VVT actual angle 1; MS2 support: no.";
-CM_ SG_ 1564 vvt_ang2 "VVT actual angle 2; MS2 support: no.";
-CM_ SG_ 1564 vvt_ang3 "VVT actual angle 3; MS2 support: no.";
-CM_ SG_ 1564 vvt_ang4 "VVT actual angle 4; MS2 support: no.";
-CM_ SG_ 1565 vvt_target1 "VVT target angle 1; MS2 support: no.";
-CM_ SG_ 1565 vvt_target2 "VVT target angle 2; MS2 support: no.";
-CM_ SG_ 1565 vvt_target3 "VVT target angle 3; MS2 support: no.";
-CM_ SG_ 1565 vvt_target4 "VVT target angle 4; MS2 support: no.";
-CM_ SG_ 1566 vvt_duty1 "VVT solenoid 1 duty cycle; MS2 support: no.";
-CM_ SG_ 1566 vvt_duty2 "VVT solenoid 2 duty cycle; MS2 support: no.";
-CM_ SG_ 1566 vvt_duty3 "VVT solenoid 3 duty cycle; MS2 support: no.";
-CM_ SG_ 1566 vvt_duty4 "VVT solenoid 4 duty cycle; MS2 support: no.";
-CM_ SG_ 1566 inj_timing_pri "Injection timing angle (primary); MS2 support: yes.";
-CM_ SG_ 1566 inj_timing_sec "Injection timing angle (secondary); MS2 support: yes.";
 CM_ SG_ 1567 fuel_pct "Ethanol content of fuel from Flex sensor; MS2 support: yes.";
 CM_ SG_ 1567 tps_accel "TPSdot-based acceleration; MS2 support: no.";
 CM_ SG_ 1567 SS1 "Shaft speed 1; MS2 support: no.";
 CM_ SG_ 1567 SS2 "Shaft speed 2; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl1 "Knock percent cylinder 1; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl2 "Knock percent cylinder 2; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl3 "Knock percent cylinder 3; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl4 "Knock percent cylinder 4; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl5 "Knock percent cylinder 5; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl6 "Knock percent cylinder 6; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl7 "Knock percent cylinder 7; MS2 support: no.";
-CM_ SG_ 1568 knock_cyl8 "Knock percent cylinder 8; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl9 "Knock percent cylinder 9; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl10 "Knock percent cylinder 10; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl11 "Knock percent cylinder 11; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl12 "Knock percent cylinder 12; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl13 "Knock percent cylinder 13; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl14 "Knock percent cylinder 14; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl15 "Knock percent cylinder 15; MS2 support: no.";
-CM_ SG_ 1569 knock_cyl16 "Knock percent cylinder 16; MS2 support: no.";
-CM_ SG_ 1570 map_accel "MAPdot-based acceleration; MS2 support: no.";
-CM_ SG_ 1570 total_accel "Total acceleration enrichment; MS2 support: no.";
-CM_ SG_ 1570 launch_timer "Timer for timed-launch retard; MS2 support: no.";
-CM_ SG_ 1570 launch_retard "Launch retard; MS2 support: no.";
-CM_ SG_ 1571 porta "CPU port A bitfield; MS2 support: yes.";
-CM_ SG_ 1571 portb "CPU port B bitfield; MS2 support: yes.";
-CM_ SG_ 1571 porteh "CPU port E/H bitfield; MS2 support: yes.";
-CM_ SG_ 1571 portk "CPU port K bitfield; MS2 support: no.";
-CM_ SG_ 1571 portmj "CPU port M/J bitfield; MS2 support: yes.";
-CM_ SG_ 1571 portp "CPU port P bitfield; MS2 support: no.";
-CM_ SG_ 1571 portt "CPU port T bitfield; MS2 support: yes.";
-CM_ SG_ 1571 cel_errorcode "CEL error code; MS2 support: no.";
-CM_ SG_ 1572 canin1 "CAN input 1 bitfield (CAN port 1 on MS2); MS2 support: yes.";
-CM_ SG_ 1572 canin2 "CAN input 2 bitfield (CAN port 2 on MS2); MS2 support: yes.";
-CM_ SG_ 1572 canout "CAN output 1 bitfield (CAN port 3 on MS2); MS2 support: yes.";
-CM_ SG_ 1572 knk_rtd "Knock retard; MS2 support: yes.";
-CM_ SG_ 1572 fuelflow "Average fuel flow; MS2 support: no.";
-CM_ SG_ 1572 fuelcons "Average fuel consumption; MS2 support: no.";
-CM_ SG_ 1573 fuel_press1 "Fuel pressure 1; MS2 support: no.";
-CM_ SG_ 1573 fuel_press2 "Fuel pressure 2; MS2 support: no.";
-CM_ SG_ 1573 fuel_temp1 "Fuel temperature 1; MS2 support: no.";
-CM_ SG_ 1573 fuel_temp2 "Fuel temperature 2; MS2 support: no.";
-CM_ SG_ 1574 batt_cur "Battery current (alternator system); MS2 support: no.";
-CM_ SG_ 1574 cel_status "CEL status bitfield; MS2 support: no.";
-CM_ SG_ 1574 fp_duty "Fuel pump output duty; MS2 support: no.";
-CM_ SG_ 1574 alt_duty "Alternator field output duty; MS2 support: no.";
-CM_ SG_ 1574 load_duty "Alternator measured load-sense duty; MS2 support: no.";
-CM_ SG_ 1574 alt_targv "Alternator target voltage; MS2 support: no.";
-CM_ SG_ 1575 looptime "Main code loop execution time; MS2 support: yes.";
-CM_ SG_ 1575 fueltemp_cor "Fuel temperature correction; MS2 support: no.";
-CM_ SG_ 1575 fuelpress_cor "Fuel pressure correction; MS2 support: no.";
-CM_ SG_ 1575 ltt_cor "Long-term trim correction; MS2 support: no.";
-CM_ SG_ 1575 sp1 "Unused; MS2 support: no.";
-CM_ SG_ 1576 tc_retard "Traction control retard; MS2 support: no.";
-CM_ SG_ 1576 cel_retard "CEL retard; MS2 support: no.";
-CM_ SG_ 1576 fc_retard "Fuel-cut overrun retard; MS2 support: no.";
-CM_ SG_ 1576 als_addfuel "ALS added fuel; MS2 support: no.";
 CM_ SG_ 1577 base_advance "Base timing from tables; MS2 support: yes.";
 CM_ SG_ 1577 idle_cor_advance "Idle correction advance; MS2 support: yes.";
 CM_ SG_ 1577 mat_retard "MAT retard; MS2 support: yes.";
@@ -739,24 +198,4 @@ CM_ SG_ 1578 adv1 "Timing lookup from table 1; MS2 support: yes.";
 CM_ SG_ 1578 adv2 "Timing lookup from table 2; MS2 support: yes.";
 CM_ SG_ 1578 adv3 "Timing lookup from table 3; MS2 support: yes.";
 CM_ SG_ 1578 adv4 "Timing lookup from table 4; MS2 support: no.";
-CM_ SG_ 1579 revlim_retard "Rev limiter soft retard; MS2 support: yes.";
-CM_ SG_ 1579 als_timing "ALS timing change; MS2 support: no.";
-CM_ SG_ 1579 ext_advance "External advance (for example transmission); MS2 support: yes.";
-CM_ SG_ 1579 deadtime1 "Injector deadtime in use (#1); MS2 support: yes.";
-CM_ SG_ 1580 launch_timing "Launch control timing; MS2 support: no.";
-CM_ SG_ 1580 step3_timing "3-step timing; MS2 support: no.";
-CM_ SG_ 1580 vsslaunch_retard "Wheel-speed-based launch retard; MS2 support: no.";
-CM_ SG_ 1580 cel_status2 "CEL status 2; MS2 support: no.";
-CM_ SG_ 1581 gps_latdeg "External GPS latitude degrees; MS2 support: no.";
-CM_ SG_ 1581 gps_latmin "GPS latitude minutes; MS2 support: no.";
-CM_ SG_ 1581 gps_latmmin "GPS latitude milli-minutes; MS2 support: no.";
-CM_ SG_ 1581 gps_londeg "GPS longitude degrees; MS2 support: no.";
-CM_ SG_ 1581 gps_lonmin "GPS longitude minutes; MS2 support: no.";
-CM_ SG_ 1581 gps_lonmmin "GPS longitude milli-minutes; MS2 support: no.";
-CM_ SG_ 1582 gps_outstatus "GPS status byte (bit 0 = E/W); MS2 support: no.";
-CM_ SG_ 1582 gps_altk "GPS altitude kilometers; MS2 support: no.";
-CM_ SG_ 1582 gps_altm "GPS altitude meters; MS2 support: no.";
-CM_ SG_ 1582 gps_speed "GPS speed; MS2 support: no.";
-CM_ SG_ 1582 gps_course "GPS course; MS2 support: no.";
-CM_ SG_ 1583 generic_pid_duty1 "Generic closed-loop duty 1; MS2 support: no.";
-CM_ SG_ 1583 generic_pid_duty2 "Generic closed-loop duty 2; MS2 support: no.";
+
