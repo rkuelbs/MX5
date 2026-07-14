@@ -1,0 +1,21 @@
+stateDiagram-v2
+    [*] --> Idle : !ignition
+    [*] --> IgnitionProvisional : ignition
+    Idle --> Wake : unlock
+    Idle --> Wake : door
+    Idle --> Wake : accessory
+    Idle --> Wake : keyDetected
+    Wake --> Shutdown : timeout
+    Wake --> Shutdown : lock
+    Wake --> Accessory : accessory && keyValid
+    Wake --> KeyNotDetected : accessory && !keyValid
+    KeyNotDetected --> Wake : timeout
+    KeyNotDetected --> Wake : !accessory
+    Accessory --> Wake : !accessory
+    Accessory --> Ignition : ignition
+    Ignition --> Accessory : !ignition
+    Shutdown --> Idle : timeout
+    Shutdown --> Idle : halt
+    IgnitionProvisional --> Ignition : ignition && keyValid
+    IgnitionProvisional --> KeyNotDetected : ignition && !keyValid
+    IgnitionProvisional --> Wake : !ignition
