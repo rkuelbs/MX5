@@ -1,0 +1,50 @@
+# Operating-system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code local settings
+.vscode/
+*.code-workspace
+
+# KiCad temporary and backup files
+*-backups/
+_autosave-*
+*.lck
+*.kicad_prl
+*.kicad_sch-bak
+*.kicad_pcb-bak
+*.bak
+*.bck
+
+# STM32CubeIDE / Eclipse metadata
+.metadata/
+.settings/
+Debug/
+Release/
+
+# General build output
+build/
+out/
+bin/
+obj/
+*.o
+*.d
+*.elf
+*.hex
+*.bin
+*.map
+*.list
+
+# Python, if used for tools
+__pycache__/
+*.pyc
+.venv/
+
+# Logs
+*.log
+
+# Secrets and local configuration
+.env
+.env.*
+secrets.*
