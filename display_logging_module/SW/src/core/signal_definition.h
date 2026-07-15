@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QString>
+#include <QMetaType>
 
 namespace miata::data {
 
@@ -10,3 +11,5 @@ struct SignalDefinition {
 };
 
 }  // namespace miata::data
+
+Q_DECLARE_METATYPE(miata::data::SignalDefinition)

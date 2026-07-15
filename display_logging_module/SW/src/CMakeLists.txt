@@ -1,3 +1,7 @@
+add_library(vehicle_signal_contract INTERFACE)
+target_include_directories(vehicle_signal_contract INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(vehicle_signal_contract INTERFACE Qt6::Core)
+
 add_library(vehicle_data_core STATIC
     can/can_bus_endpoint.cpp
     can/can_bus_endpoint.h
@@ -40,7 +44,7 @@ add_library(vehicle_data_core STATIC
 
 target_include_directories(vehicle_data_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(vehicle_data_core
-    PUBLIC Qt6::Core Qt6::SerialBus Qt6::SerialPort Threads::Threads
+    PUBLIC vehicle_signal_contract Qt6::Core Qt6::SerialBus Qt6::SerialPort Threads::Threads
     PRIVATE ${MIATA_MDF_TARGET}
 )
 

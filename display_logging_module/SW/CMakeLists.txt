@@ -7,11 +7,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core SerialBus SerialPort)
+find_package(Qt6 6.5 REQUIRED COMPONENTS
+    Core
+    Qml
+    Quick
+    QuickControls2
+    SerialBus
+    SerialPort
+)
+qt_policy(SET QTP0004 NEW)
 find_package(Threads REQUIRED)
 include(cmake/MdfDependencies.cmake)
 
 add_subdirectory(src)
+add_subdirectory(dash_ui)
 
 include(CTest)
 if(BUILD_TESTING)

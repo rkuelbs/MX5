@@ -41,3 +41,7 @@ target_compile_definitions(ecm_simulator_test PRIVATE
 add_vehicle_data_test(vn300_binary_parser_test vn300_binary_parser_test.cpp)
 add_vehicle_data_test(vn300_simulator_test vn300_simulator_test.cpp)
 add_vehicle_data_test(source_health_monitor_test source_health_monitor_test.cpp)
+
+add_executable(dash_signal_model_test dash_signal_model_test.cpp)
+target_link_libraries(dash_signal_model_test PRIVATE dash_signal_backend Qt6::Test)
+add_test(NAME dash_signal_model_test COMMAND dash_signal_model_test)

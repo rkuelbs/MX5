@@ -109,6 +109,9 @@ frame tests protect the public signal contract if the decoder is later changed.
    streaming resynchronization and CRC validation; reconnect behavior remains.
 6. Completed: animated ECM/VN300 simulation, independent replay, source health,
    and registry freshness; combined CAN/VN replay merging remains.
-7. Add local IPC and a minimal `ECM.rpm` Qt Quick screen.
-8. Add fake/replay controls and a modular dash component library.
+7. In progress: the independent Qt Quick process, diagnostics signal model,
+   filtering, selection, freshness display, and animated fake provider are
+   complete; add local logger IPC next.
+8. Add graphical pages, fake/replay controls, charting, and a modular dash
+   component library.
 9. Add service startup, watchdog, and PDM shutdown handshake integration.

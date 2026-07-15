@@ -23,10 +23,13 @@ software for the Raspberry Pi display/logger.
 - Animated ECM driving-cycle and VN300 circle-driving simulators with
   per-signal diagnostic locks, fault injection, and timestamped replay.
 - CAN/VN300 source-health signals and per-signal freshness queries.
+- Separate Qt Quick `miata_dash` process with a filterable live diagnostics
+  list, local freshness indication, chart-selection state, and animated fake
+  data for desktop/Design Studio development.
 - Automated tests for decoding, encoding, replay, logging, ordering, and faults.
 
-Backend/UI IPC, signal freshness, and the production Qt Quick dash are not
-implemented yet.
+Logger-to-dash IPC and the production graphical gauge pages are not implemented
+yet. The diagnostics dash and its source-neutral backend model are implemented.
 
 ## Requirements
 
@@ -56,6 +59,21 @@ ctest --test-dir build --output-on-failure
 ```
 
 The verified Windows kit is CMake 4.4.0, Ninja, MinGW 13.1.0, and Qt 6.11.1.
+
+## Run the Diagnostics Dash
+
+The dash starts with animated fake data and lists every signal configured in
+`config/logging.json`:
+
+```text
+display_logging_module/SW/build/dash_ui/miata_dash
+```
+
+Use `--fullscreen` on the target display. Search filters canonical names, and
+the Plot checkbox records selections for the planned time-series page. Open
+[`dash_ui/MiataDash.qmlproject`](dash_ui/MiataDash.qmlproject) in Qt Design
+Studio. See [`dash_ui/README.md`](dash_ui/README.md) for the QML/CMake workflow
+and backend contract.
 
 ## Replay a CAN Log
 

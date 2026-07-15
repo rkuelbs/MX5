@@ -1,0 +1,13 @@
+import QmlProject 1.1
+
+Project {
+    mainFile: "qml/Main.qml"
+
+    QmlFiles {
+        directory: "qml"
+    }
+
+    ImageFiles {
+        directory: "assets"
+    }
+}
