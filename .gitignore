@@ -25,6 +25,7 @@ Release/
 
 # General build output
 build/
+build-*/
 out/
 bin/
 obj/

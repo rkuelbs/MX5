@@ -1,0 +1,16 @@
+{
+  "rate_hz": 50,
+  "circle": {
+    "radius_m": 60.0,
+    "speed_mps": 15.0,
+    "origin_latitude_deg": 39.0,
+    "origin_longitude_deg": -96.0,
+    "altitude_m": 300.0
+  },
+  "signals": {},
+  "faults": {
+    "paused": false,
+    "corrupt_crc_every": 0,
+    "drop_every": 0
+  }
+}

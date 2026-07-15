@@ -1,0 +1,14 @@
+{
+  "rate_hz": 20,
+  "automatic_values": true,
+  "signals": {
+    "ECM.status1": 0,
+    "ECM.status2": 0,
+    "ECM.status3": 0
+  },
+  "faults": {
+    "paused": false,
+    "drop_frames": [],
+    "dlc_overrides": {}
+  }
+}
