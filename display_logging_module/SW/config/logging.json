@@ -1,4 +1,10 @@
 {
+  "storage": {
+    "minimum_free_bytes": 2147483648,
+    "maximum_total_bytes": 21474836480,
+    "maximum_age_days": 30,
+    "cleanup_interval_seconds": 60
+  },
   "default_group": "off",
   "rate_groups": {
     "native": { "mode": "native" },
@@ -8,13 +14,13 @@
     "off": { "mode": "off" }
   },
   "signals": {
-    "WCM.wcm_event_length": "native",
-    "WCM.wcm_event_id": "native",
-    "WCM.wcm_event_type": "native",
-    "WCM.wcm_counter": "medium",
-    "WCM.wcm_status": "medium",
-    "WCM.wcm_boost_encoder": "medium",
-    "WCM.wcm_inputs": "medium",
+    "WCM.event_length": "native",
+    "WCM.event_id": "native",
+    "WCM.event_type": "native",
+    "WCM.counter": "medium",
+    "WCM.status": "medium",
+    "WCM.boost_encoder": "medium",
+    "WCM.inputs": "medium",
 
     "ECM.seconds": "slow",
     "ECM.pw1": "native",
@@ -130,6 +136,13 @@
     "LOGGER.vn300_healthy": "medium",
     "LOGGER.vn300_rx_age": "medium",
     "LOGGER.vn300_crc_errors": "slow",
-    "LOGGER.vn300_format_errors": "slow"
+    "LOGGER.vn300_format_errors": "slow",
+    "LOGGER.storage_healthy": "slow",
+    "LOGGER.storage_free_bytes": "slow",
+    "LOGGER.storage_used_bytes": "slow",
+    "LOGGER.storage_session_count": "slow",
+    "LOGGER.storage_incomplete_sessions": "slow",
+    "LOGGER.storage_cleanup_errors": "slow",
+    "LOGGER.logging_active": "slow"
   }
 }

@@ -2,6 +2,7 @@
 #include "can/dbc_decoder.h"
 #include "vn300/vn300_binary_parser.h"
 #include "core/source_health_monitor.h"
+#include "logging/log_storage_manager.h"
 
 #include <QFile>
 #include <QTemporaryDir>
@@ -84,6 +85,7 @@ void DecodedLogPolicyTest::defaultConfigAssignsEveryDbcSignal() {
     QStringList names = decoder.canonicalSignalNames();
     names.append(miata::data::Vn300BinaryParser::canonicalSignalNames());
     names.append(miata::data::SourceHealthMonitor::canonicalSignalNames());
+    names.append(miata::data::LogStorageManager::canonicalSignalNames());
     QVERIFY2(
         policy.load(
             QStringLiteral(MIATA_TEST_LOGGING_CONFIG_PATH),

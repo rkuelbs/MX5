@@ -44,6 +44,7 @@ __pycache__/
 
 # Logs
 *.log
+display_logging_module/SW/logs/dev_stack/
 
 # Secrets and local configuration
 .env

@@ -1,5 +1,6 @@
 #include "backend/signal_filter_model.h"
 #include "backend/signal_list_model.h"
+#include "backend/signal_history_store.h"
 
 #include <QtTest>
 
@@ -8,6 +9,7 @@ class DashSignalModelTest final : public QObject {
 
 private slots:
     void exposesValuesFilteringSelectionAndFreshness();
+    void buffersOnlySelectedNumericHistory();
 };
 
 void DashSignalModelTest::exposesValuesFilteringSelectionAndFreshness() {
@@ -42,6 +44,32 @@ void DashSignalModelTest::exposesValuesFilteringSelectionAndFreshness() {
 
     QTest::qWait(30);
     QVERIFY(source.data(source.index(0), miata::dash::SignalListModel::StaleRole).toBool());
+}
+
+void DashSignalModelTest::buffersOnlySelectedNumericHistory() {
+    miata::dash::SignalHistoryStore history;
+    QCOMPARE(history.maxSignals(), 4);
+    history.setSelectedSignals({QStringLiteral("ECM.rpm"), QStringLiteral("ECM.clt")});
+    history.updateSamples({
+        {QStringLiteral("ECM.rpm"), 4000.0, QStringLiteral("rpm"), 1,
+         miata::data::SignalSource::Can},
+        {QStringLiteral("ECM.clt"), 195.0, QStringLiteral("deg F"), 1,
+         miata::data::SignalSource::Can},
+        {QStringLiteral("ECM.map"), 120.0, QStringLiteral("kPa"), 1,
+         miata::data::SignalSource::Can},
+    });
+    const auto traces = history.series();
+    QCOMPARE(traces.size(), 2);
+    const auto rpm = traces.front().toMap();
+    QCOMPARE(rpm.value(QStringLiteral("name")).toString(), QStringLiteral("ECM.rpm"));
+    QCOMPARE(rpm.value(QStringLiteral("unit")).toString(), QStringLiteral("rpm"));
+    QCOMPARE(rpm.value(QStringLiteral("points")).toList().size(), 1);
+
+    history.setWindowSeconds(1);
+    QCOMPARE(history.windowSeconds(), 2);
+    history.clear();
+    QCOMPARE(history.series().front().toMap()
+                 .value(QStringLiteral("points")).toList().size(), 0);
 }
 
 QTEST_MAIN(DashSignalModelTest)

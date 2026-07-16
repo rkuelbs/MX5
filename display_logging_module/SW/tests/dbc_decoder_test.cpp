@@ -13,6 +13,7 @@ private slots:
     void usesSenderAndSignalForCanonicalName();
     void decodesEcmRpm();
     void encodesEcmRpm();
+    void encodesAndDecodesWcmEvent();
     void rejectsDuplicateSignalNamesFromOneSender();
 };
 
@@ -23,6 +24,39 @@ void DbcDecoderTest::usesSenderAndSignalForCanonicalName() {
     QVERIFY(decoder.canonicalSignalNames().contains(QStringLiteral("ECM.rpm")));
     QVERIFY(!decoder.canonicalSignalNames().contains(
         QStringLiteral("ECM.MS_Realtime_Group_00.rpm")));
+    QVERIFY(decoder.canonicalSignalNames().contains(QStringLiteral("WCM.inputs")));
+    QVERIFY(decoder.canonicalSignalNames().contains(QStringLiteral("WCM.event_type")));
+    QVERIFY(!decoder.canonicalSignalNames().contains(QStringLiteral("WCM.wcm_inputs")));
+}
+
+void DbcDecoderTest::encodesAndDecodesWcmEvent() {
+    miata::data::DbcDecoder codec;
+    QString error;
+    QVERIFY2(codec.load(QStringLiteral(MIATA_TEST_DBC_PATH), &error), qPrintable(error));
+
+    const QCanBusFrame frame = codec.encodeMessage(
+        256,
+        {
+            {QStringLiteral("WCM.event_type"), 0.0},
+            {QStringLiteral("WCM.event_id"), 3.0},
+            {QStringLiteral("WCM.event_length"), 1234.0},
+        },
+        &error);
+    QVERIFY2(frame.isValid(), qPrintable(error));
+
+    const auto samples = codec.decode(frame, 20, &error);
+    QVERIFY2(error.isEmpty(), qPrintable(error));
+    const auto valueFor = [&samples](const QString& name) {
+        const auto sample = std::find_if(
+            samples.cbegin(), samples.cend(), [&name](const auto& candidate) {
+                return candidate.canonicalName == name;
+            });
+        return sample == samples.cend() ? -1.0 : sample->value.toDouble();
+    };
+
+    QCOMPARE(valueFor(QStringLiteral("WCM.event_type")), 0.0);
+    QCOMPARE(valueFor(QStringLiteral("WCM.event_id")), 3.0);
+    QCOMPARE(valueFor(QStringLiteral("WCM.event_length")), 1234.0);
 }
 
 void DbcDecoderTest::decodesEcmRpm() {

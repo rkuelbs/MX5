@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Miata Dash Service</title>
+  <style>
+    :root { color-scheme: dark; font-family: system-ui, sans-serif; background:#091018; color:#e5edf5; }
+    body { margin:0; padding:18px; max-width:1500px; margin-inline:auto; }
+    h1 { margin:0 0 4px; font-size:1.7rem; } .subtle { color:#8da0b3; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px; margin:18px 0; }
+    .card, .panel { background:#111b25; border:1px solid #2b3c4d; border-radius:8px; padding:13px; }
+    .label { color:#8da0b3; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; }
+    .value { font:600 1.25rem ui-monospace,monospace; margin-top:5px; overflow-wrap:anywhere; }
+    .good { color:#72e2a8; } .bad { color:#ff8294; } .warn { color:#ffd166; }
+    .actions { display:flex; flex-wrap:wrap; gap:9px; margin:12px 0; }
+    button { background:#1f6feb; color:white; border:0; border-radius:6px; padding:9px 14px; font-weight:600; cursor:pointer; }
+    button.danger { background:#9d3346; } button:disabled { opacity:.45; cursor:not-allowed; }
+    input { width:min(420px,90%); background:#091018; color:#e5edf5; border:1px solid #3a4b5d; border-radius:6px; padding:9px; }
+    select { background:#091018; color:#e5edf5; border:1px solid #3a4b5d; border-radius:6px; padding:9px; }
+    .table-wrap { overflow:auto; max-height:58vh; margin-top:10px; border:1px solid #2b3c4d; border-radius:7px; }
+    table { width:100%; border-collapse:collapse; font:13px ui-monospace,monospace; }
+    th { position:sticky; top:0; background:#1a2835; text-align:left; } th,td { padding:8px 10px; border-bottom:1px solid #223140; white-space:nowrap; }
+    td:nth-child(2) { text-align:right; } #message { min-height:1.3em; margin:8px 0; }
+    a { color:#70b7ff; } .session-actions { display:flex; gap:8px; align-items:center; }
+  </style>
+</head>
+<body>
+  <h1>Miata Dash / Logger Service</h1>
+  <div class="subtle" id="host">Connecting...</div>
+  <section class="cards">
+    <div class="card"><div class="label">Logger IPC</div><div class="value" id="logger">--</div></div>
+    <div class="card"><div class="label">Signals</div><div class="value" id="signalCount">--</div></div>
+    <div class="card"><div class="label">Last data</div><div class="value" id="dataAge">--</div></div>
+    <div class="card"><div class="label">Log storage free</div><div class="value" id="storage">--</div></div>
+    <div class="card"><div class="label">Managed logs</div><div class="value" id="managedLogs">--</div></div>
+    <div class="card"><div class="label">Retention limit</div><div class="value" id="retentionLimit">--</div></div>
+    <div class="card"><div class="label">DBC SHA-256</div><div class="value" id="dbcHash">--</div></div>
+    <div class="card"><div class="label">Last service action</div><div class="value" id="lastAction">None</div></div>
+  </section>
+  <section class="panel">
+    <div class="label">Service actions</div>
+    <div class="actions">
+      <button data-action="restart-dash">Restart dash</button>
+      <button data-action="restart-logger">Restart logger</button>
+      <button class="danger" data-action="reboot">Reboot Pi</button>
+    </div>
+    <div id="message" class="subtle"></div>
+  </section>
+  <section class="panel" id="replayPanel" style="margin-top:12px;display:none">
+    <div class="label">Development replay control</div>
+    <div class="subtle" id="replayState">Disconnected</div>
+    <div class="actions">
+      <button id="replayPlay">Play</button><button id="replayPause">Pause</button>
+      <input id="replayPosition" type="range" min="0" max="1" value="0" style="flex:1;min-width:260px">
+      <select id="replaySpeed"><option>.25</option><option>.5</option><option selected>1</option><option>2</option><option>5</option><option>10</option></select>
+    </div>
+  </section>
+  <section class="panel" style="margin-top:12px">
+    <div class="label">Validated configuration update</div>
+    <div class="subtle" id="configState">Checking availability...</div>
+    <div class="actions">
+      <select id="configType"><option value="dbc">Vehicle DBC</option><option value="logging">Logging JSON</option><option value="dash">Dash JSON</option></select>
+      <input id="configFile" type="file">
+      <button id="stageConfig">Stage and validate</button>
+      <button id="activateConfig" class="danger" disabled>Activate staged file</button>
+    </div>
+    <div class="subtle">Activation creates a <code>.previous</code> backup. Restart the affected service after activation.</div>
+  </section>
+  <section class="panel" style="margin-top:12px">
+    <div><div class="label">Log sessions</div><div class="subtle" id="logSummary">Loading...</div></div>
+    <div class="table-wrap" style="max-height:30vh"><table><thead><tr><th>Started UTC</th><th>Size</th><th>Status</th><th>Files</th><th>Action</th></tr></thead><tbody id="logs"></tbody></table></div>
+  </section>
+  <section class="panel" style="margin-top:12px">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+      <div><div class="label">Live diagnostic signals</div><div class="subtle">Read-only logger IPC values</div></div>
+      <input id="filter" placeholder="Filter canonical signal name">
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>Signal</th><th>Value</th><th>Unit</th><th>Source</th><th>Age</th></tr></thead><tbody id="signals"></tbody></table></div>
+  </section>
+<script>
+  const $ = id => document.getElementById(id); let allSignals = []; let status = {}; let stagedConfig = null;
+  const bytes = n => n == null || n < 0 ? '--' : n >= 1e9 ? (n/1e9).toFixed(1)+' GB' : (n/1e6).toFixed(0)+' MB';
+  const age = n => n == null ? '--' : n < 1000 ? Math.round(n)+' ms' : (n/1000).toFixed(1)+' s';
+  async function getJson(path) { const r=await fetch(path,{cache:'no-store'}); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+  async function refreshStatus() {
+    try { status=await getJson('/api/status'); $('host').textContent=status.host+' | '+status.os+' | web '+status.service_version;
+      $('logger').textContent=status.logger_connected?'CONNECTED':'DISCONNECTED'; $('logger').className='value '+(status.logger_connected?'good':'bad');
+      $('signalCount').textContent=status.signal_count; $('dataAge').textContent=age(status.last_signal_batch_age_ms);
+      $('storage').textContent=bytes(status.storage_available_bytes); $('dbcHash').textContent=status.configuration.dbc_sha256||'unavailable';
+      $('retentionLimit').textContent=bytes(status.retention.maximum_total_bytes);
+      $('lastAction').textContent=status.last_action_result||'None'; document.querySelectorAll('button[data-action]').forEach(b=>b.disabled=!status.actions_available||status.action_busy);
+      const config=status.config_service||{}; $('stageConfig').disabled=!config.updates_enabled; if(!config.updates_enabled) { $('configState').textContent='Updates disabled for this process (read-only mode).'; $('activateConfig').disabled=true; } else if(!stagedConfig&&$('configState').textContent.startsWith('Checking')) { $('configState').textContent='Ready to stage and validate a configuration file.'; }
+    } catch(e) { $('message').textContent='Status error: '+e.message; }
+  }
+  async function replayCommand(name, body={}) { try { const r=await fetch('/api/replay/'+name,{method:'POST',headers:{'Content-Type':'application/json','X-Miata-Service':'1'},body:JSON.stringify(body)}); if(!r.ok) throw new Error(await r.text()); } catch(e) { $('message').textContent='Replay command failed: '+e.message; } }
+  async function refreshReplay() { try { const replay=await getJson('/api/replay'); $('replayPanel').style.display=replay.available?'block':'none'; if(!replay.available) return; const pos=replay.position_ns/1e9,duration=replay.duration_ns/1e9; $('replayState').textContent=replay.source.toUpperCase()+' | '+replay.state+' | '+pos.toFixed(1)+' / '+duration.toFixed(1)+' s | '+replay.speed_factor+'x'; if(!$('replayPosition').matches(':active')) { $('replayPosition').max=Math.max(.001,duration); $('replayPosition').value=pos; } } catch(e) { $('replayPanel').style.display='none'; } }
+  function renderSignals() { const q=$('filter').value.toLowerCase(); const body=$('signals'); body.replaceChildren();
+    for(const s of allSignals) { if(!s.name.toLowerCase().includes(q)) continue; const tr=document.createElement('tr');
+      for(const v of [s.name,String(s.value??'--'),s.unit,s.source,age(s.age_ms)]) { const td=document.createElement('td'); td.textContent=v||''; tr.appendChild(td); } body.appendChild(tr); }
+  }
+  async function refreshSignals() { try { allSignals=await getJson('/api/signals'); renderSignals(); } catch(e) { $('message').textContent='Signal error: '+e.message; } }
+  async function refreshLogs() { try { const catalog=await getJson('/api/logs'); $('managedLogs').textContent=bytes(catalog.managed_bytes);
+      $('logSummary').textContent=catalog.session_count+' sessions | '+catalog.completed_count+' completed | '+catalog.protected_count+' active/incomplete';
+      const body=$('logs'); body.replaceChildren(); for(const session of catalog.sessions) { const tr=document.createElement('tr');
+        for(const value of [session.started_utc||session.id,bytes(session.bytes),session.status]) { const td=document.createElement('td'); td.textContent=value; tr.appendChild(td); }
+        const files=document.createElement('td'); for(const file of session.files) { const a=document.createElement('a'); a.href='/api/log-file/'+encodeURIComponent(file.name); a.textContent=file.name; a.style.display='block'; files.appendChild(a); } tr.appendChild(files);
+        const actionCell=document.createElement('td'); if(session.complete) { const button=document.createElement('button'); button.textContent='Delete'; button.className='danger'; button.addEventListener('click',()=>deleteSession(session.id)); actionCell.appendChild(button); } else { actionCell.textContent='Protected'; } tr.appendChild(actionCell); body.appendChild(tr); }
+    } catch(e) { $('message').textContent='Log catalog error: '+e.message; } }
+  async function deleteSession(id) { if(!confirm('Delete completed log session '+id+'?')) return; try { const r=await fetch('/api/log-session/'+id+'/delete',{method:'POST',headers:{'Content-Type':'application/json','X-Miata-Service':'1'},body:'{}'}); const text=await r.text(); if(!r.ok) throw new Error(text); $('message').textContent=id+' deleted'; await refreshLogs(); } catch(e) { $('message').textContent='Delete failed: '+e.message; } }
+  async function stageConfiguration() { const file=$('configFile').files[0]; const type=$('configType').value; if(!file) { $('configState').textContent='Choose a file first.'; return; } $('configState').textContent='Validating '+file.name+'...';
+    try { const r=await fetch('/api/config/'+type+'/stage',{method:'POST',headers:{'Content-Type':'application/octet-stream','X-Miata-Service':'1'},body:await file.arrayBuffer()}); const text=await r.text(); if(!r.ok) throw new Error(text); stagedConfig=JSON.parse(text); $('activateConfig').disabled=false; const warning=(stagedConfig.warnings||[]).join(' | '); $('configState').textContent='Valid '+type+' candidate, SHA-256 '+stagedConfig.sha256+(warning?' | Warnings: '+warning:''); }
+    catch(e) { stagedConfig=null; $('activateConfig').disabled=true; $('configState').textContent='Validation failed: '+e.message; } }
+  async function activateConfiguration() { if(!stagedConfig||!confirm('Activate the validated '+stagedConfig.type+' configuration?')) return; try { const r=await fetch('/api/config/'+stagedConfig.type+'/activate',{method:'POST',headers:{'Content-Type':'application/json','X-Miata-Service':'1'},body:JSON.stringify({token:stagedConfig.token})}); const text=await r.text(); if(!r.ok) throw new Error(text); const result=JSON.parse(text); $('configState').textContent='Activated. Restart '+result.restart_required+' to apply it.'; stagedConfig=null; $('activateConfig').disabled=true; refreshStatus(); } catch(e) { $('configState').textContent='Activation failed: '+e.message; } }
+  async function action(name) { if(!confirm('Confirm '+name.replaceAll('-',' ')+'?')) return; $('message').textContent='Requesting '+name+'...';
+    try { const r=await fetch('/api/action/'+name,{method:'POST',headers:{'Content-Type':'application/json','X-Miata-Service':'1'},body:'{}'}); const text=await r.text(); if(!r.ok) throw new Error(text); $('message').textContent=name+' accepted'; }
+    catch(e) { $('message').textContent='Action failed: '+e.message; } refreshStatus(); }
+  document.querySelectorAll('button[data-action]').forEach(b=>b.addEventListener('click',()=>action(b.dataset.action))); $('stageConfig').addEventListener('click',stageConfiguration); $('activateConfig').addEventListener('click',activateConfiguration);
+  $('replayPlay').addEventListener('click',()=>replayCommand('play')); $('replayPause').addEventListener('click',()=>replayCommand('pause')); $('replayPosition').addEventListener('change',e=>replayCommand('seek',{position_ms:Number(e.target.value)*1000})); $('replaySpeed').addEventListener('change',e=>replayCommand('speed',{factor:Number(e.target.value)}));
+  $('filter').addEventListener('input',renderSignals); refreshStatus(); refreshSignals(); refreshLogs(); refreshReplay(); setInterval(refreshStatus,1000); setInterval(refreshSignals,1000); setInterval(refreshLogs,5000); setInterval(refreshReplay,250);
+</script>
+</body>
+</html>

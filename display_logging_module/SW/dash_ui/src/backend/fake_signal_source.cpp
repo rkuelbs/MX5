@@ -76,6 +76,9 @@ void FakeSignalSource::generateBatch() {
     samples.reserve(definitions_.size());
     for (int index = 0; index < definitions_.size(); ++index) {
         const auto& definition = definitions_.at(index);
+        // Event-message fields are emitted only when an edge occurs. Repeating
+        // their last values would manufacture duplicate WCM events downstream.
+        if (definition.canonicalName.startsWith(QStringLiteral("WCM.event_"))) continue;
         samples.append({definition.canonicalName,
                         valueFor(definition.canonicalName, seconds, index),
                         definition.unit,
@@ -111,6 +114,9 @@ bool FakeSignalSource::loadDefinitions(QString* errorMessage) {
 double FakeSignalSource::valueFor(const QString& name, double t, int index) const {
     const double slow = std::sin(t * 0.45);
     const double fast = std::sin(t * 1.7 + index * 0.17);
+    if (name == QStringLiteral("WCM.inputs")) return 0.0;
+    if (name == QStringLiteral("WCM.counter")) return std::fmod(t * 20.0, 256.0);
+    if (name.startsWith(QStringLiteral("WCM."))) return 0.0;
     if (name == QStringLiteral("ECM.rpm")) return 3600.0 + 2600.0 * slow;
     if (name == QStringLiteral("ECM.tps")) return 48.0 + 42.0 * slow;
     if (name == QStringLiteral("ECM.map")) return 105.0 + 70.0 * std::max(0.0, slow);

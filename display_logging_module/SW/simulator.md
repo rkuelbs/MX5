@@ -130,3 +130,56 @@ canonical value while the rest of the circular model keeps moving.
 VN-only replay currently requires `--no-can`. CAN and VN300 captures need a
 merged replay scheduler before two independent recorded timelines can be safely
 interleaved into one globally ordered MDF session.
+
+For driver-free desktop development, `--local-server <name>` publishes the
+identical binary packets over a same-user local socket and the logger consumes
+them with `--vn300-local <name>`. This transport is used by
+`tools/start_dev_stack.ps1`; it changes only transport, not packet generation
+or parsing, and is not used on the vehicle.
+
+## WCM Button Simulator
+
+`wcm_simulator` is a small Qt Quick control panel for testing steering-wheel
+interaction with a mouse. It encodes the production `WCM_STATUS` and
+`WCM_EVENT` layouts directly from `shared/miata.dbc`.
+
+| Button ID | Input | Consumer |
+|---:|---|---|
+| 0 | Down | Dash |
+| 1 | Up | Dash |
+| 2 | Menu | Dash |
+| 3 | Ack / Enter | Dash |
+| 4 | Left turn | PDM |
+| 5 | Right turn | PDM |
+| 6 | Wiper | PDM |
+| 7 | Flash | PDM |
+
+A mouse press emits a rising-edge event and an immediate status frame. Holding
+the mouse keeps the corresponding bit in the periodic `WCM.inputs` mask. Mouse
+release emits a falling-edge event with `WCM.event_length` in milliseconds and
+then an updated status frame. The **Hold / stuck** checkbox latches an input for
+diagnostic testing.
+
+Start the logger, dash, and simulator in separate PowerShell terminals from the
+repository root:
+
+```powershell
+.\display_logging_module\SW\build-mingw\src\vehicle_loggerd.exe `
+  --plugin virtualcan --can-interface can0 --dbc shared\miata.dbc
+```
+
+```powershell
+.\display_logging_module\SW\build-mingw\dash_ui\miata_dash.exe `
+  --data-source ipc
+```
+
+```powershell
+.\display_logging_module\SW\build-mingw\wcm_simulator_ui\wcm_simulator.exe `
+  --plugin virtualcan --interface can0 --dbc shared\miata.dbc
+```
+
+The controls can pause all transmission, independently drop status or event
+frames, freeze the status counter, advance it by more than one count to create
+counter gaps, and set the boost-encoder byte. `--status-rate` changes the
+periodic rate from its 20 Hz default. `--no-bus --record <path>` creates a
+candump replay file without a CAN interface.

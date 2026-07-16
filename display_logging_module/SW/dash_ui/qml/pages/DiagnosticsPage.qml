@@ -8,7 +8,10 @@ Item {
     id: root
 
     required property var dataModel
+    required property var historyStore
     property string sourceName: "No data source"
+    property bool chartVisible: false
+    property var replayController: null
 
     readonly property int selectWidth: 60
     readonly property int valueWidth: 150
@@ -50,6 +53,11 @@ Item {
 
             Item { Layout.fillWidth: true }
 
+            Button {
+                text: root.chartVisible ? qsTr("Signal list") : qsTr("Live plot")
+                onClicked: root.chartVisible = !root.chartVisible
+            }
+
             Label {
                 text: qsTr("%1 signals").arg(root.dataModel ? root.dataModel.count : 0)
                 color: "#94a3b8"
@@ -66,6 +74,56 @@ Item {
                 Keys.onEscapePressed: {
                     clear()
                     focus = false
+                }
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 58
+            radius: 4
+            color: "#17202b"
+            visible: root.replayController && root.replayController.available
+
+            RowLayout {
+                anchors.fill: parent
+                anchors.margins: 8
+                spacing: 10
+
+                Label {
+                    text: qsTr("Replay %1 - %2")
+                        .arg(root.replayController ? root.replayController.source.toUpperCase() : "")
+                        .arg(root.replayController ? root.replayController.state : "")
+                    color: "#7dd3fc"
+                    font.bold: true
+                }
+                Button {
+                    text: root.replayController && root.replayController.state === "playing"
+                          ? qsTr("Pause") : qsTr("Play")
+                    onClicked: {
+                        if (root.replayController.state === "playing") root.replayController.pause()
+                        else root.replayController.play()
+                    }
+                }
+                Slider {
+                    Layout.fillWidth: true
+                    from: 0
+                    to: Math.max(1, root.replayController ? root.replayController.durationMs : 1)
+                    value: pressed ? value : (root.replayController ? root.replayController.positionMs : 0)
+                    onMoved: if (root.replayController) root.replayController.seekMs(value)
+                }
+                Label {
+                    text: qsTr("%1 / %2 s")
+                        .arg(root.replayController ? (root.replayController.positionMs / 1000).toFixed(1) : "0.0")
+                        .arg(root.replayController ? (root.replayController.durationMs / 1000).toFixed(1) : "0.0")
+                    color: "#cbd5e1"
+                    font.family: "monospace"
+                }
+                ComboBox {
+                    model: ["0.25x", "0.5x", "1x", "2x", "5x", "10x"]
+                    currentIndex: 2
+                    onActivated: if (root.replayController)
+                        root.replayController.setPlaybackSpeed(parseFloat(currentText))
                 }
             }
         }
@@ -149,6 +207,7 @@ Item {
             id: signalList
             Layout.fillWidth: true
             Layout.fillHeight: true
+            visible: !root.chartVisible
             clip: true
             model: root.dataModel
             boundsBehavior: Flickable.StopAtBounds
@@ -268,6 +327,13 @@ Item {
                 color: "#64748b"
                 font.pixelSize: 18
             }
+        }
+
+        HistoryChart {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            visible: root.chartVisible
+            historyStore: root.historyStore
         }
     }
 }

@@ -1,0 +1,28 @@
+[Unit]
+Description=Miata dash/logger service web interface
+Wants=vehicle-loggerd.service miata-dash.service
+After=vehicle-loggerd.service miata-dash.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+User=miata
+Group=miata
+WorkingDirectory=/opt/miata
+EnvironmentFile=/etc/miata/display-logger.env
+ExecStart=/opt/miata/bin/miata_service_web --listen-address ${SERVICE_WEB_LISTEN_ADDRESS} --port ${SERVICE_WEB_PORT} --ipc-name /run/miata/vehicle-data-v1 --dbc /etc/miata/miata.dbc --logging-config /etc/miata/logging.json --dash-config /etc/miata/dash.json --log-directory ${LOG_DIRECTORY} --enable-config-updates
+Restart=on-failure
+RestartSec=1
+TimeoutStartSec=10
+TimeoutStopSec=5
+WatchdogSec=5
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/miata/logs
+ReadWritePaths=/etc/miata
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target

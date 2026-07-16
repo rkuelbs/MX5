@@ -83,6 +83,13 @@ void SignalListModel::setStaleAfterMs(int milliseconds) {
     refreshAges();
 }
 
+QStringList SignalListModel::selectedSignalNames() const {
+    QStringList names;
+    for (const auto& row : rows_)
+        if (row.selected) names.append(row.definition.canonicalName);
+    return names;
+}
+
 void SignalListModel::setDefinitions(
     const QList<miata::data::SignalDefinition>& definitions) {
     QHash<QString, Row> previous;
@@ -105,6 +112,7 @@ void SignalListModel::setDefinitions(
     }
     rebuildIndex();
     endResetModel();
+    emit selectedSignalsChanged(selectedSignalNames());
 }
 
 void SignalListModel::updateSamples(const QList<miata::data::SignalSample>& samples) {
@@ -157,8 +165,13 @@ void SignalListModel::updateSamples(const QList<miata::data::SignalSample>& samp
 void SignalListModel::setSelected(const QString& canonicalName, bool selected) {
     const auto found = rowByName_.constFind(canonicalName);
     if (found == rowByName_.cend() || rows_[*found].selected == selected) return;
+    if (selected && selectedSignalNames().size() >= 4) {
+        emit dataChanged(index(*found), index(*found), {SelectedRole});
+        return;
+    }
     rows_[*found].selected = selected;
     emit dataChanged(index(*found), index(*found), {SelectedRole});
+    emit selectedSignalsChanged(selectedSignalNames());
 }
 
 qint64 SignalListModel::ageMs(const Row& row) const {

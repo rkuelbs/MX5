@@ -15,6 +15,7 @@ namespace miata::dash {
 class SignalListModel final : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int staleAfterMs READ staleAfterMs WRITE setStaleAfterMs NOTIFY staleAfterMsChanged)
+    Q_PROPERTY(QStringList selectedSignalNames READ selectedSignalNames NOTIFY selectedSignalsChanged)
 
 public:
     enum Role {
@@ -38,6 +39,7 @@ public:
 
     [[nodiscard]] int staleAfterMs() const;
     void setStaleAfterMs(int milliseconds);
+    [[nodiscard]] QStringList selectedSignalNames() const;
 
 public slots:
     void setDefinitions(const QList<miata::data::SignalDefinition>& definitions);
@@ -46,6 +48,7 @@ public slots:
 
 signals:
     void staleAfterMsChanged();
+    void selectedSignalsChanged(const QStringList& signalNames);
 
 private:
     struct Row {

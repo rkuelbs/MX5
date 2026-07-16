@@ -5,6 +5,7 @@
 
 #include <QDateTime>
 #include <QDir>
+#include <QFile>
 #include <QMutexLocker>
 
 #include <algorithm>
@@ -168,6 +169,16 @@ void AsyncSessionLogger::workerMain(
         ? directory.filePath(stem + QStringLiteral(".can.log"))
         : QString{};
     const QString measurementPath = directory.filePath(stem + QStringLiteral(".mf4"));
+    const QString activeMarkerPath = directory.filePath(stem + QStringLiteral(".active"));
+
+    if (opened) {
+        QFile marker(activeMarkerPath);
+        opened = marker.open(QIODevice::WriteOnly | QIODevice::NewOnly)
+            && marker.write("active\n") == 7;
+        if (!opened) {
+            error = QStringLiteral("could not create active-session marker %1").arg(activeMarkerPath);
+        }
+    }
 
     SessionLogSink rawSink;
     if (opened && rawCanEnabled) {
@@ -247,13 +258,20 @@ void AsyncSessionLogger::workerMain(
         }
     }
 
+    bool finalized = true;
     if (!rawSink.flush(&error)) {
         storeWorkerError(error);
+        finalized = false;
     }
     if (!mdfSink.close(&error)) {
         storeWorkerError(error);
+        finalized = false;
     }
     rawSink.close();
+    if (finalized && !QFile::remove(activeMarkerPath)) {
+        storeWorkerError(QStringLiteral("could not remove active-session marker %1")
+                             .arg(activeMarkerPath));
+    }
     QMutexLocker locker(&mutex_);
     workerStarted_ = false;
 }

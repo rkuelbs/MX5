@@ -38,6 +38,8 @@ void AsyncSessionLoggerTest::drainsQueuedRecordsOnClose() {
     const QString mdfPath = logger.mdfPath();
     QVERIFY(!rawPath.isEmpty());
     QVERIFY(!mdfPath.isEmpty());
+    const QString activeMarkerPath = mdfPath.chopped(4) + QStringLiteral(".active");
+    QVERIFY(QFile::exists(activeMarkerPath));
 
     QVERIFY(logger.writeRawFrame(
         {QCanBusFrame(0x5F0, QByteArray::fromHex("0000000000000BB8")),
@@ -52,6 +54,7 @@ void AsyncSessionLoggerTest::drainsQueuedRecordsOnClose() {
          miata::data::SignalSource::Replay},
         &error));
     logger.close();
+    QVERIFY(!QFile::exists(activeMarkerPath));
 
     QCOMPARE(logger.takeDroppedRecordCount(), 0);
     QVERIFY(logger.maximumQueueDepth() > 0);

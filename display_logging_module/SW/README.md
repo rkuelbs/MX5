@@ -17,26 +17,47 @@ software for the Raspberry Pi display/logger.
 - Realtime, accelerated, and unthrottled replay modes.
 - Compressed MDF4 decoded-signal session logs and optional diagnostic raw
   candump logs.
+- Configurable storage quota, minimum-free-space and age retention with
+  oldest-completed-session cleanup and active/crash-incomplete protection.
 - Bounded asynchronous logging with worker-owned files and clean queue draining.
 - Embedded DBC/logging configuration with SHA-256 provenance hashes.
 - DBC-driven ECM simulation with hot-reloaded values and fault injection.
 - Animated ECM driving-cycle and VN300 circle-driving simulators with
   per-signal diagnostic locks, fault injection, and timestamped replay.
+- Mouse-driven WCM simulator with all eight wheel buttons, momentary and stuck
+  states, periodic status/event messages, and counter/message-drop fault modes.
 - CAN/VN300 source-health signals and per-signal freshness queries.
 - Separate Qt Quick `miata_dash` process with a filterable live diagnostics
   list, local freshness indication, chart-selection state, and animated fake
   data for desktop/Design Studio development.
+- Versioned binary local IPC from `vehicle_loggerd` to `miata_dash`, with
+  display-rate coalescing, lossless WCM events, snapshots, and reconnect.
+- Four-action WCM/keyboard input routing, page/menu navigation, and an
+  acknowledgeable warning lifecycle and overlay.
+- Validated `dash.json` presentation metadata, constant or signal-driven
+  thresholds, warning hysteresis/delays, and reusable analog/digital gauges.
+- Bounded live diagnostic history for up to four selected signals, with
+  independently auto-scaled traces and selectable 5-120 second windows.
+- Raspberry Pi systemd service templates that start logging before the UI,
+  restart crashed processes independently, and preserve orderly shutdown.
+- Independent service web process with live logger/signal/storage/config status
+  and log browsing/download/deletion plus an exact allowlist for dash restart,
+  logger restart, and Pi reboot.
+- Two-phase DBC/logging/dash upload with complete-set validation, token-matched
+  atomic activation, and a previous-file backup.
+- One-command Windows stack launcher for animated ECM, VN300, WCM, logger,
+  dash, and service-web integration.
 - Automated tests for decoding, encoding, replay, logging, ordering, and faults.
 
-Logger-to-dash IPC and the production graphical gauge pages are not implemented
-yet. The diagnostics dash and its source-neutral backend model are implemented.
+Production artwork and additional gauge styles are not implemented yet.
 
 ## Requirements
 
 - CMake 3.21 or newer
 - Ninja or another CMake generator
 - A C++20 compiler
-- Qt 6.5 or newer with Core, Serial Bus, Serial Port, and Test
+- Qt 6.5 or newer with Core, Network, QML, Quick, Quick Controls 2, Serial Bus,
+  Serial Port, and Test
 - The Qt SocketCAN plugin on Linux or VirtualCAN plugin on Windows
 - Git access on the first configure, unless compatible MDF dependencies are
   already installed
@@ -59,11 +80,13 @@ ctest --test-dir build --output-on-failure
 ```
 
 The verified Windows kit is CMake 4.4.0, Ninja, MinGW 13.1.0, and Qt 6.11.1.
+Raspberry Pi deployment templates and the hardwired PDM shutdown-handshake plan
+are documented in [`deploy/systemd/README.md`](deploy/systemd/README.md).
 
-## Run the Diagnostics Dash
+## Run the Dash
 
-The dash starts with animated fake data and lists every signal configured in
-`config/logging.json`:
+On Windows, the dash defaults to animated fake data. On Raspberry Pi/Linux, it
+defaults to the logger IPC source:
 
 ```text
 display_logging_module/SW/build/dash_ui/miata_dash
@@ -74,6 +97,156 @@ the Plot checkbox records selections for the planned time-series page. Open
 [`dash_ui/MiataDash.qmlproject`](dash_ui/MiataDash.qmlproject) in Qt Design
 Studio. See [`dash_ui/README.md`](dash_ui/README.md) for the QML/CMake workflow
 and backend contract.
+
+Select either source explicitly on any platform:
+
+```text
+miata_dash --data-source fake
+miata_dash --data-source ipc
+```
+
+The logger and dash default to the local server name
+`miata-vehicle-data-v1`. Override both with `--ipc-name <name>` when running
+isolated development instances. The dash reconnects automatically if it starts
+before the logger or if either process restarts.
+
+## Run the Complete Windows Development Stack
+
+After building `build-mingw`, run this once from the repository root:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
+  .\display_logging_module\SW\tools\start_dev_stack.ps1
+```
+
+This starts the animated ECM and VN300 simulators, mouse-driven WCM simulator,
+production logger, IPC-backed dash, and service web page. It opens
+`http://127.0.0.1:8080/` automatically. ECM and VN300 scenario JSON files remain
+hot-reloadable while everything is running. Press Ctrl+C in the launcher
+terminal to request a clean logger exit, finalize the MDF, and stop the child
+processes.
+
+The VN300 simulator uses a development-only local socket carrying the same
+binary packets consumed by the production parser, so no virtual COM-port driver
+is needed. The Pi continues to use the FTDI serial source. Useful launcher
+options include `-NoLogging`, `-NoBrowser`, `-WebPort 8081`, and
+`-DurationSeconds 30`. `-NoGui` is provided for automated smoke tests.
+
+## Run the Service Web Interface
+
+The service page is a third process and observes the same local logger IPC as
+the dash. On Windows, run it from the repository root with:
+
+```powershell
+.\display_logging_module\SW\build-mingw\service_web\miata_service_web.exe `
+  --listen-address 127.0.0.1 `
+  --port 8080 `
+  --dbc .\shared\miata.dbc `
+  --logging-config .\display_logging_module\SW\config\logging.json `
+  --dash-config .\display_logging_module\SW\config\dash.json `
+  --log-directory .\logs
+```
+
+Then open `http://127.0.0.1:8080/`. Live values appear when the logger is
+running with IPC enabled. Service actions are intentionally unavailable on
+Windows. On the Pi, the supplied systemd unit serves port 80 and grants only
+three exact maintenance commands. See
+[`service_web/README.md`](service_web/README.md) for the API and security scope.
+Configuration activation is disabled by default and enabled explicitly only by
+the Pi unit; the Windows launcher cannot overwrite repository configuration
+through the browser.
+
+## Logger-to-dash IPC
+
+`vehicle_loggerd` starts the local signal server by default. Qt implements this
+as a named pipe on Windows and a Unix-domain socket on Raspberry Pi OS. Only
+the local machine can connect, and the socket is restricted to the same OS
+user. Run both services under the same account on the Pi.
+
+The logger sends the canonical signal catalog when a dash connects, followed
+by a current-value snapshot. It batches updates at approximately 30 Hz and
+coalesces ordinary signals to their newest value. Every `WCM.event_*` sample is
+retained so quick press/release pairs cannot be lost between display frames.
+Acquisition and MDF logging do not depend on a connected dash. Use `--no-ipc`
+to disable the server.
+
+## Configure Gauges and Warnings
+
+[`config/dash.json`](config/dash.json) is the shared presentation contract used
+by both gauges and warning evaluation. It owns display labels, precision, gauge
+range/tick spacing, and low/high caution and warning rules. It does not duplicate
+DBC scaling or units.
+
+A threshold defines exactly one source: a constant `value` or a canonical
+`signal`. Signal-driven thresholds may specify a `fallback` and
+`source_stale_ms`. This supports future PDM-published boost limits while using
+the same resolved limit for colored gauge hashes and warning evaluation.
+Threshold rules also accept `hysteresis`, `activation_delay_ms`, and
+`clear_delay_ms`.
+
+Each signal may also define a `freshness` policy. `stale_after_ms` is measured
+from receipt in the dash process, so it is valid across logger restarts and
+does not compare unrelated monotonic clocks. `activation_delay_ms` prevents a
+brief interruption from opening an overlay, `clear_delay_ms` requires stable
+recovery, and `severity` is either `warning` or `critical`. The same stale
+timeout dims its gauge and drives its warning:
+
+```json
+"freshness": {
+  "stale_after_ms": 500,
+  "activation_delay_ms": 250,
+  "clear_delay_ms": 100,
+  "severity": "critical"
+}
+```
+
+The default configuration applies different timeouts to fast RPM/AFR data,
+slower coolant/battery/fuel data, and logger-published CAN/VN300 health. A
+fresh `LOGGER.can_healthy` or `LOGGER.vn300_healthy` value of zero raises a
+separate source-health warning; loss of those health updates raises a stale
+warning.
+
+Warnings for a source that is intentionally unpowered can be gated by a
+periodic control signal:
+
+```json
+"enabled_when": {
+  "signal": "PDM.ecm_powered",
+  "equals": 1,
+  "fallback": false,
+  "source_stale_ms": 500
+}
+```
+
+`PDM.ecm_powered` is only an illustrative name and is not added to the DBC by
+this example. Once the PDM power-status names are finalized, add the condition
+to ECM and WCM presentations. A missing/stale gate uses `fallback`; `false`
+prevents nuisance downstream warnings while the independently monitored PDM
+messages still identify loss of the always-powered authority. When a gate
+changes from disabled to enabled, the full signal stale timeout starts again,
+so an ECM/WCM warning is not raised at the ignition edge before that module has
+had time to boot and transmit.
+
+The embedded default is used automatically. Pass `--dash-config <path>` to load
+an external file without rebuilding the dash. Invalid JSON, gauge ranges,
+threshold sources, or timing values prevent dash startup with an explicit
+error. The initial configured coolant caution/warning values are examples to be
+reviewed against the completed vehicle.
+
+A future PDM-controlled boost gauge can reference controller-published limits:
+
+```json
+"high_warning": {
+  "signal": "PDM.boost_warning_limit",
+  "fallback": 15,
+  "source_stale_ms": 500,
+  "hysteresis": 1
+}
+```
+
+Those placeholder PDM signals must be added to the shared DBC when the boost
+status protocol is defined; the dash should display the controller's actual
+active limit rather than infer it from a selector position.
 
 ## Replay a CAN Log
 
@@ -91,6 +264,21 @@ Omit `--replay-fast` for timestamp-paced playback. Use `--replay-speed 2.0`
 for twice-real-time playback. Replays terminate automatically after the final
 frame. `--no-log` disables output logs. Raw CAN is not recorded by default; add
 `--raw-can-log` only when a bus-level diagnostic capture is needed.
+
+For interactive CAN replay, start all three processes with the same explicit
+control name:
+
+```powershell
+.\display_logging_module\SW\build-mingw\src\vehicle_loggerd.exe --dbc .\shared\miata.dbc --replay .\capture.log --no-log --replay-control-name miata-replay-dev
+.\display_logging_module\SW\build-mingw\dash_ui\miata_dash.exe --data-source ipc --replay-control-name miata-replay-dev
+.\display_logging_module\SW\build-mingw\service_web\miata_service_web.exe --listen-address 127.0.0.1 --replay-control-name miata-replay-dev
+```
+
+The diagnostics page and service web page then provide play, pause, seek, and
+speed controls. Controlled replay remains alive at end-of-file so it can be
+restarted or sought. The separate control socket is rejected for live input,
+fast replay, and replay logging; `--no-log` prevents a backward seek from
+creating non-monotonic MDF timestamps. Production signal IPC remains data-only.
 
 Accepted input lines use classic candump syntax:
 
@@ -110,6 +298,12 @@ configuration and can be changed without rebuilding the logger.
 
 ```json
 {
+  "storage": {
+    "minimum_free_bytes": 2147483648,
+    "maximum_total_bytes": 21474836480,
+    "maximum_age_days": 30,
+    "cleanup_interval_seconds": 60
+  },
   "default_group": "off",
   "rate_groups": {
     "native": { "mode": "native" },
@@ -135,6 +329,15 @@ configuration spelling mistakes. Signals omitted from `signals` use
 `default_group` and produce a startup warning. The default is deliberately
 `off`, so a newly added DBC signal cannot silently increase log size. Use
 `--logging-config <path>` to select another configuration.
+
+The `storage` policy is enforced before a session starts and at its configured
+interval. Zero disables the total-size or age limit; minimum free space may
+also be zero. Cleanup groups the `.mf4` and optional `.can.log` files by their
+UTC session stem and removes the oldest completed session first. An adjacent
+`.active` marker protects the current file. If a crash leaves that marker, the
+session is retained as incomplete rather than silently deleted. If completed
+logs cannot satisfy the limits, logging closes and stops instead of consuming
+the remaining filesystem; acquisition, IPC, and the dash continue.
 
 ## VN300 Binary Input
 
@@ -226,6 +429,25 @@ VirtualCAN uses a local TCP bus, so no CAN adapter is required. Edit and save
 the scenario while the simulator is running; changes are applied automatically.
 See [simulator.md](simulator.md) for the scenario and fault controls.
 
+## Run the WCM Simulator on Windows
+
+With `vehicle_loggerd` and `miata_dash --data-source ipc` already running on
+the same VirtualCAN channel, start the graphical wheel-button simulator:
+
+```powershell
+.\display_logging_module\SW\build-mingw\wcm_simulator_ui\wcm_simulator.exe `
+  --plugin virtualcan `
+  --interface can0 `
+  --dbc shared\miata.dbc
+```
+
+Press and hold a button card for a normal momentary input. The simulator sends
+the rising event immediately, keeps the bit set in periodic `WCM.inputs`, then
+sends the falling event with measured press length when released. Use
+**Hold / stuck** and the fault controls for diagnostics. Buttons 0-3 drive dash
+navigation; buttons 4-7 are transmitted for future PDM testing but are not
+treated as dash actions.
+
 ## Source Health and Freshness
 
 The registry retains each sample's receive timestamp and exposes age/freshness
@@ -236,6 +458,10 @@ canonical diagnostic signals every 100 ms:
 - `LOGGER.can_decode_errors`
 - `LOGGER.vn300_enabled`, `LOGGER.vn300_healthy`, and `LOGGER.vn300_rx_age`
 - `LOGGER.vn300_crc_errors` and `LOGGER.vn300_format_errors`
+- `LOGGER.storage_healthy`, `LOGGER.storage_free_bytes`, and
+  `LOGGER.storage_used_bytes`
+- `LOGGER.storage_session_count`, `LOGGER.storage_incomplete_sessions`,
+  `LOGGER.storage_cleanup_errors`, and `LOGGER.logging_active`
 
 The default stale timeout is 500 ms for each source. Override it with
 `--can-stale-ms` or `--vn300-stale-ms`. A disabled source is considered healthy
@@ -246,9 +472,12 @@ when connected and receiving valid data within its timeout.
 
 Before track use, the MDF writer and queue sizing must be benchmarked at maximum
 CAN and VN300 rates, including deliberately slow storage and clean PDM-requested
-shutdown. Abrupt-power-loss recovery, session rotation, storage quotas, and
-oldest-first retention are not implemented yet. MDF finalization currently
-depends on the normal PDM shutdown handshake or orderly process exit.
+shutdown. Storage quotas and oldest-first retention are implemented, but must
+still be qualified against the target filesystem. Abrupt-power-loss MDF
+recovery and time/size-based rotation within one long-running logger process
+remain future work. MDF finalization depends on the normal PDM shutdown
+handshake or another orderly process exit; an abrupt loss leaves the session's
+`.active` marker so it is protected and visible for diagnosis.
 
 ## Benchmark the Logging Path
 

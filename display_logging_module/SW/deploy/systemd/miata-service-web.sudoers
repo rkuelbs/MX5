@@ -1,0 +1,5 @@
+# Validate with visudo -cf before installing as /etc/sudoers.d/miata-service-web.
+# Keep these commands synchronized with ServiceActionRunner's fixed allowlist.
+miata ALL=(root) NOPASSWD: /usr/bin/systemctl restart miata-dash.service
+miata ALL=(root) NOPASSWD: /usr/bin/systemctl restart vehicle-loggerd.service
+miata ALL=(root) NOPASSWD: /usr/bin/systemctl reboot

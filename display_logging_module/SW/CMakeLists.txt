@@ -9,6 +9,7 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS
     Core
+    Network
     Qml
     Quick
     QuickControls2
@@ -21,6 +22,8 @@ include(cmake/MdfDependencies.cmake)
 
 add_subdirectory(src)
 add_subdirectory(dash_ui)
+add_subdirectory(wcm_simulator_ui)
+add_subdirectory(service_web)
 
 include(CTest)
 if(BUILD_TESTING)

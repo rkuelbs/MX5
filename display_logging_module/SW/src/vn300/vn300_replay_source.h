@@ -20,8 +20,16 @@ public:
     bool load(const QString& path, QString* errorMessage = nullptr);
     bool start(TimingMode mode, double speedFactor = 1.0, QString* errorMessage = nullptr);
     void stop();
+    void pause();
+    void resume();
+    bool seekToNs(qint64 positionNs, QString* errorMessage = nullptr);
+    bool setSpeedFactor(double speedFactor, QString* errorMessage = nullptr);
     [[nodiscard]] qsizetype packetCount() const;
     [[nodiscard]] bool isRunning() const;
+    [[nodiscard]] bool isPaused() const;
+    [[nodiscard]] qint64 positionNs() const;
+    [[nodiscard]] qint64 durationNs() const;
+    [[nodiscard]] double speedFactor() const;
 
 signals:
     void samplesReceived(const QList<miata::data::SignalSample>& samples);
@@ -38,10 +46,12 @@ private:
     qsizetype nextIndex_ = 0;
     TimingMode timingMode_ = TimingMode::Realtime;
     double speedFactor_ = 1.0;
+    qint64 playbackBaseNs_ = 0;
     QElapsedTimer replayClock_;
     QTimer timer_;
     Vn300BinaryParser parser_;
     bool running_ = false;
+    bool paused_ = false;
 };
 
 }  // namespace miata::data

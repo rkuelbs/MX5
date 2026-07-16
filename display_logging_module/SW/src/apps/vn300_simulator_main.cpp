@@ -6,6 +6,8 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
+#include <QLocalServer>
+#include <QLocalSocket>
 #include <QSerialPort>
 #include <QTextStream>
 #include <QTimer>
@@ -34,11 +36,15 @@ int main(int argc, char* argv[]) {
     arguments.addOption({QStringLiteral("record"),
                          QStringLiteral("Optional timestamped VN300 replay capture"),
                          QStringLiteral("path")});
+    arguments.addOption({QStringLiteral("local-server"),
+                         QStringLiteral("Development local binary-output server name"),
+                         QStringLiteral("name")});
     arguments.process(application);
 
     if (!arguments.isSet(QStringLiteral("serial-port"))
-        && !arguments.isSet(QStringLiteral("record"))) {
-        qCritical() << "Specify --serial-port, --record, or both";
+        && !arguments.isSet(QStringLiteral("record"))
+        && !arguments.isSet(QStringLiteral("local-server"))) {
+        qCritical() << "Specify --serial-port, --local-server, --record, or a combination";
         return 1;
     }
     bool baudOk = false;
@@ -81,12 +87,42 @@ int main(int argc, char* argv[]) {
         captureStream << "; VN300 timestamped binary packets\n";
     }
 
+    QLocalServer localServer;
+    QList<QLocalSocket*> localClients;
+    if (arguments.isSet(QStringLiteral("local-server"))) {
+        const QString name = arguments.value(QStringLiteral("local-server"));
+        localServer.setSocketOptions(QLocalServer::UserAccessOption);
+        QLocalServer::removeServer(name);
+        if (!localServer.listen(name)) {
+            qCritical().noquote() << "Local VN300 server failed:" << localServer.errorString();
+            return 5;
+        }
+        QObject::connect(&localServer, &QLocalServer::newConnection, &application, [&] {
+            while (localServer.hasPendingConnections()) {
+                auto* client = localServer.nextPendingConnection();
+                if (!client) continue;
+                localClients.append(client);
+                QObject::connect(client, &QLocalSocket::disconnected, &application, [&, client] {
+                    localClients.removeAll(client);
+                    client->deleteLater();
+                });
+            }
+        });
+    }
+
     QObject::connect(&simulator, &Vn300Simulator::packetGenerated, &application,
                      [&](const miata::data::Vn300PacketRecord& record) {
         if (serial.isOpen() && serial.write(record.packet) != record.packet.size()) {
             qWarning().noquote() << "Serial write failed:" << serial.errorString();
         }
         if (capture.isOpen()) captureStream << Vn300LogCodec::formatLine(record) << '\n';
+        for (auto* client : std::as_const(localClients)) {
+            if (client->bytesToWrite() > 2 * 1024 * 1024) {
+                client->disconnectFromServer();
+            } else {
+                client->write(record.packet);
+            }
+        }
     });
     QObject::connect(&simulator, &Vn300Simulator::scenarioReloaded,
                      [](const QString& path) { qInfo().noquote() << "Reloaded scenario" << path; });

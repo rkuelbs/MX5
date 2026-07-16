@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "signals": {
+    "ECM.rpm": {
+      "display_name": "Engine Speed",
+      "precision": 0,
+      "freshness": {
+        "stale_after_ms": 500,
+        "activation_delay_ms": 250,
+        "clear_delay_ms": 100,
+        "severity": "critical"
+      },
+      "gauge": {
+        "minimum": 0,
+        "maximum": 8000,
+        "major_step": 1000,
+        "minor_step": 250
+      }
+    },
+    "ECM.clt": {
+      "display_name": "Coolant",
+      "precision": 0,
+      "freshness": {
+        "stale_after_ms": 2000,
+        "activation_delay_ms": 500,
+        "clear_delay_ms": 100,
+        "severity": "warning"
+      },
+      "gauge": {
+        "minimum": 100,
+        "maximum": 260,
+        "major_step": 20,
+        "minor_step": 5
+      },
+      "thresholds": {
+        "high_caution": {
+          "value": 220,
+          "hysteresis": 5,
+          "activation_delay_ms": 1000,
+          "clear_delay_ms": 2000
+        },
+        "high_warning": {
+          "value": 240,
+          "hysteresis": 5,
+          "activation_delay_ms": 500,
+          "clear_delay_ms": 2000
+        }
+      }
+    },
+    "ECM.batt": {
+      "display_name": "Battery",
+      "precision": 1,
+      "freshness": {
+        "stale_after_ms": 2000,
+        "activation_delay_ms": 500,
+        "clear_delay_ms": 100,
+        "severity": "warning"
+      },
+      "gauge": {
+        "minimum": 8,
+        "maximum": 16,
+        "major_step": 2,
+        "minor_step": 0.5
+      }
+    },
+    "ECM.afr1_old": {
+      "display_name": "Air/Fuel Ratio",
+      "precision": 1,
+      "freshness": {
+        "stale_after_ms": 500,
+        "activation_delay_ms": 250,
+        "clear_delay_ms": 100,
+        "severity": "warning"
+      },
+      "gauge": {
+        "minimum": 9,
+        "maximum": 20,
+        "major_step": 2,
+        "minor_step": 1
+      }
+    },
+    "ECM.fuel_pct": {
+      "display_name": "Fuel Level",
+      "precision": 0,
+      "freshness": {
+        "stale_after_ms": 5000,
+        "activation_delay_ms": 1000,
+        "clear_delay_ms": 100,
+        "severity": "warning"
+      },
+      "gauge": {
+        "minimum": 0,
+        "maximum": 100,
+        "major_step": 25,
+        "minor_step": 5
+      }
+    },
+    "LOGGER.can_healthy": {
+      "display_name": "CAN Bus",
+      "precision": 0,
+      "freshness": {
+        "stale_after_ms": 500,
+        "activation_delay_ms": 500,
+        "clear_delay_ms": 100,
+        "severity": "critical"
+      },
+      "thresholds": {
+        "low_warning": {
+          "value": 0.5,
+          "activation_delay_ms": 500,
+          "clear_delay_ms": 250
+        }
+      }
+    },
+    "LOGGER.vn300_healthy": {
+      "display_name": "VN300",
+      "precision": 0,
+      "freshness": {
+        "stale_after_ms": 500,
+        "activation_delay_ms": 500,
+        "clear_delay_ms": 100,
+        "severity": "critical"
+      },
+      "thresholds": {
+        "low_warning": {
+          "value": 0.5,
+          "activation_delay_ms": 500,
+          "clear_delay_ms": 250
+        }
+      }
+    }
+  }
+}

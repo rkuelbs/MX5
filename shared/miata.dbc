@@ -37,15 +37,15 @@ BU_: WCM ECM RPI PDM
 
 
 BO_ 256 WCM_event_message: 4 WCM
- SG_ wcm_event_length : 23|16@0+ (10,0) [0|655350] "ms"  RPI,PDM
- SG_ wcm_event_id : 5|6@0+ (1,0) [0|63] ""  RPI,PDM
- SG_ wcm_event_type : 7|2@0+ (1,0) [0|3] ""  RPI,PDM
+ SG_ event_length : 23|16@0+ (1,0) [0|65535] "ms"  RPI,PDM
+ SG_ event_id : 5|6@0+ (1,0) [0|7] ""  RPI,PDM
+ SG_ event_type : 7|2@0+ (1,0) [0|1] ""  RPI,PDM
 
 BO_ 257 WCM_status_message: 4 WCM
- SG_ wcm_counter : 31|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
- SG_ wcm_status : 23|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
- SG_ wcm_boost_encoder : 15|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
- SG_ wcm_inputs : 7|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
+ SG_ counter : 31|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
+ SG_ status : 23|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
+ SG_ boost_encoder : 15|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
+ SG_ inputs : 7|8@0+ (1,0) [0|255] ""  RPI,PDM,WCM
 
 BO_ 1520 MS_Realtime_Group_00: 8 ECM
  SG_ seconds : 7|16@0+ (1,0) [0|65535] "s"  RPI
@@ -134,12 +134,15 @@ BO_ 1578 MS_Realtime_Group_58: 8 ECM
 
 
 CM_ "ECM advanced real-time data broadcast. 11-bit CAN, 500 kbit/s, big-endian. Default base identifier 1520 decimal (0x5F0); message identifier = base + group. Broadcast rates are user-configurable and therefore are not encoded as cycle-time attributes.";
-CM_ SG_ 256 wcm_event_id "id of button pressed/released";
-CM_ SG_ 256 wcm_event_type "0 = released, 1=pressed";
-CM_ SG_ 257 wcm_counter "counter for wcm status messages";
-CM_ SG_ 257 wcm_status "status bitmask for wcm";
-CM_ SG_ 257 wcm_boost_encoder "boost control dial position";
-CM_ SG_ 257 wcm_inputs "bitmask of WCM button status";
+CM_ SG_ 256 event_length "Button press duration in milliseconds; valid only on falling-edge events.";
+CM_ SG_ 256 event_id "Button ID: 0=down, 1=up, 2=menu, 3=ack, 4=left turn, 5=right turn, 6=wiper, 7=flash.";
+CM_ SG_ 256 event_type "Button edge: 0=falling/released, 1=rising/pressed.";
+CM_ SG_ 257 counter "Incrementing modulo-256 counter for WCM status messages.";
+CM_ SG_ 257 status "WCM health and status bitmask.";
+CM_ SG_ 257 boost_encoder "Boost-control dial position.";
+CM_ SG_ 257 inputs "Button-state bitmask: bit 0=down, 1=up, 2=menu, 3=ack, 4=left turn, 5=right turn, 6=wiper, 7=flash.";
+VAL_ 256 event_id 0 "down" 1 "up" 2 "menu" 3 "ack" 4 "left_turn" 5 "right_turn" 6 "wiper" 7 "flash";
+VAL_ 256 event_type 0 "falling" 1 "rising";
 CM_ SG_ 1520 seconds "Seconds ECU has been on; MS2 support: yes.";
 CM_ SG_ 1520 pw1 "Main pulsewidth bank 1; MS2 support: yes.";
 CM_ SG_ 1520 pw2 "Main pulsewidth bank 2; MS2 support: yes.";

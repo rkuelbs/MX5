@@ -1,0 +1,24 @@
+[Unit]
+Description=Miata Qt dashboard
+After=vehicle-loggerd.service
+Requires=vehicle-loggerd.service
+
+[Service]
+Type=notify
+NotifyAccess=main
+User=miata
+Group=miata
+WorkingDirectory=/opt/miata
+EnvironmentFile=/etc/miata/display-logger.env
+Environment=QT_QPA_PLATFORM=eglfs
+ExecStart=/opt/miata/bin/miata_dash --fullscreen --data-source ipc --ipc-name /run/miata/vehicle-data-v1 --dash-config /etc/miata/dash.json
+Restart=always
+RestartSec=1
+TimeoutStartSec=20
+TimeoutStopSec=5
+WatchdogSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

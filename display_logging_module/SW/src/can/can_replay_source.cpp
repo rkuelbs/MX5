@@ -24,6 +24,7 @@ CanReplaySource::CanReplaySource(QObject* parent) : QObject(parent) {
 bool CanReplaySource::load(const QString& path, QString* errorMessage) {
     stop();
     records_.clear();
+    playbackBaseNs_ = 0;
 
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -96,7 +97,9 @@ bool CanReplaySource::start(TimingMode mode, double speedFactor, QString* errorM
     timingMode_ = mode;
     speedFactor_ = speedFactor;
     nextIndex_ = 0;
+    playbackBaseNs_ = 0;
     running_ = true;
+    paused_ = false;
     replayClock_.start();
     timer_.start(0);
     return true;
@@ -105,6 +108,68 @@ bool CanReplaySource::start(TimingMode mode, double speedFactor, QString* errorM
 void CanReplaySource::stop() {
     timer_.stop();
     running_ = false;
+    paused_ = false;
+}
+
+void CanReplaySource::pause() {
+    if (!running_ || paused_) return;
+    playbackBaseNs_ = positionNs();
+    timer_.stop();
+    paused_ = true;
+}
+
+void CanReplaySource::resume() {
+    if (!running_ || !paused_) return;
+    if (nextIndex_ >= records_.size()) {
+        running_ = false;
+        paused_ = false;
+        emit replayFinished();
+        return;
+    }
+    paused_ = false;
+    replayClock_.restart();
+    scheduleNext();
+}
+
+bool CanReplaySource::seekToNs(qint64 position, QString* errorMessage) {
+    if (records_.isEmpty()) {
+        if (errorMessage) *errorMessage = QStringLiteral("no replay is loaded");
+        return false;
+    }
+    const qint64 bounded = std::clamp<qint64>(position, 0, durationNs());
+    playbackBaseNs_ = bounded;
+    nextIndex_ = bounded >= durationNs() ? records_.size()
+        : std::lower_bound(records_.cbegin(), records_.cend(), bounded,
+              [](const CanFrameRecord& record, qint64 timestamp) {
+                  return record.monotonicTimestampNs < timestamp;
+              }) - records_.cbegin();
+    timer_.stop();
+    if (running_ && !paused_) {
+        replayClock_.restart();
+        if (nextIndex_ >= records_.size()) {
+            running_ = false;
+            emit replayFinished();
+        } else {
+            scheduleNext();
+        }
+    }
+    return true;
+}
+
+bool CanReplaySource::setSpeedFactor(double speedFactor, QString* errorMessage) {
+    if (!std::isfinite(speedFactor) || speedFactor <= 0.0 || speedFactor > 100.0) {
+        if (errorMessage) *errorMessage = QStringLiteral("replay speed must be greater than zero and at most 100");
+        return false;
+    }
+    const qint64 currentPosition = positionNs();
+    speedFactor_ = speedFactor;
+    playbackBaseNs_ = currentPosition;
+    if (running_ && !paused_) {
+        replayClock_.restart();
+        timer_.stop();
+        scheduleNext();
+    }
+    return true;
 }
 
 qsizetype CanReplaySource::frameCount() const {
@@ -114,6 +179,21 @@ qsizetype CanReplaySource::frameCount() const {
 bool CanReplaySource::isRunning() const {
     return running_;
 }
+
+bool CanReplaySource::isPaused() const { return paused_; }
+
+qint64 CanReplaySource::positionNs() const {
+    if (!running_ || paused_) return playbackBaseNs_;
+    const qint64 elapsedMediaNs = static_cast<qint64>(
+        static_cast<double>(replayClock_.nsecsElapsed()) * speedFactor_);
+    return std::min(durationNs(), playbackBaseNs_ + elapsedMediaNs);
+}
+
+qint64 CanReplaySource::durationNs() const {
+    return records_.isEmpty() ? 0 : records_.back().monotonicTimestampNs;
+}
+
+double CanReplaySource::speedFactor() const { return speedFactor_; }
 
 void CanReplaySource::emitNextBatch() {
     if (!running_) {
@@ -129,6 +209,7 @@ void CanReplaySource::emitNextBatch() {
     }
 
     if (nextIndex_ >= records_.size()) {
+        playbackBaseNs_ = durationNs();
         running_ = false;
         emit replayFinished();
         return;
@@ -142,8 +223,10 @@ void CanReplaySource::scheduleNext() {
         return;
     }
 
+    const qint64 relativeMediaNs = std::max<qint64>(
+        0, records_.at(nextIndex_).monotonicTimestampNs - playbackBaseNs_);
     const qint64 targetNs = static_cast<qint64>(
-        static_cast<double>(records_.at(nextIndex_).monotonicTimestampNs) / speedFactor_);
+        static_cast<double>(relativeMediaNs) / speedFactor_);
     const qint64 remainingNs = std::max<qint64>(0, targetNs - replayClock_.nsecsElapsed());
     const int delayMs = static_cast<int>(std::ceil(static_cast<double>(remainingNs) / 1'000'000.0));
     timer_.start(delayMs);
