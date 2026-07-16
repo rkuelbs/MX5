@@ -172,8 +172,8 @@ affordances for filtering, selection, and future charts.
    connected through versioned, reconnecting local logger IPC.
 8. In progress: validated presentation/threshold/freshness configuration, the
    first Drive page, reusable analog/digital gauges, and stale/source-health
-   warnings and bounded diagnostic charting are complete; add production
-   artwork, additional gauge types, and replay controls.
+   warnings, bounded diagnostic charting, and replay controls are complete; add
+   production artwork and additional gauge types.
 9. In progress: systemd startup/restart ordering, readiness, event-loop
    watchdog notification, boot milestones, and the kernel GPIO shutdown
    handshake are scaffolded; finalize CAN/GPIO setup and electrical polarity,

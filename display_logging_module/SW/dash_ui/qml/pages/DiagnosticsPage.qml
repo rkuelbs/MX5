@@ -106,11 +106,16 @@ Item {
                     }
                 }
                 Slider {
+                    id: replayPosition
                     Layout.fillWidth: true
                     from: 0
                     to: Math.max(1, root.replayController ? root.replayController.durationMs : 1)
-                    value: pressed ? value : (root.replayController ? root.replayController.positionMs : 0)
                     onMoved: if (root.replayController) root.replayController.seekMs(value)
+
+                    Binding on value {
+                        when: !replayPosition.pressed
+                        value: root.replayController ? root.replayController.positionMs : 0
+                    }
                 }
                 Label {
                     text: qsTr("%1 / %2 s")
@@ -120,10 +125,12 @@ Item {
                     font.family: "monospace"
                 }
                 ComboBox {
+                    readonly property var speeds: [0.25, 0.5, 1, 2, 5, 10]
                     model: ["0.25x", "0.5x", "1x", "2x", "5x", "10x"]
-                    currentIndex: 2
+                    currentIndex: Math.max(0, speeds.indexOf(
+                        root.replayController ? root.replayController.speedFactor : 1))
                     onActivated: if (root.replayController)
-                        root.replayController.setPlaybackSpeed(parseFloat(currentText))
+                        root.replayController.setPlaybackSpeed(speeds[currentIndex])
                 }
             }
         }

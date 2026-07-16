@@ -105,6 +105,9 @@ void Vn300SimulatorTest::recordsAndReplaysPackets() {
     miata::data::Vn300ReplaySource controlledReplay;
     QVERIFY2(controlledReplay.load(capture.fileName(), &error), qPrintable(error));
     QVERIFY(controlledReplay.durationNs() > 0);
+    QVERIFY2(controlledReplay.setSpeedFactor(0.5, &error), qPrintable(error));
+    QCOMPARE(controlledReplay.speedFactor(), 0.5);
+    QVERIFY(!controlledReplay.setSpeedFactor(0.0, &error));
     QSignalSpy controlledSamples(
         &controlledReplay, &miata::data::Vn300ReplaySource::samplesReceived);
     QSignalSpy controlledFinished(

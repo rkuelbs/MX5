@@ -19,12 +19,18 @@ Inputs
 - door
     - discrete input with pullup resistor
     - pulled low when either door is open
-- window_cmd
+- window_left_cmd
     - adc input connected to resistor ladder to multiplex window switches
-    - resistors connected to Left UP, Left DOWN, Right UP, Right DOWN
-- hvac_cmd
+    - resistors connected to Left UP, Left DOWN
+- window_right_cmd
+    - adc input connected to resistor ladder to multiplex window switches
+    - resistors connected to Right UP, Right DOWN
+- blower_cmd
     - adc input connected to resistor ladder to multiplex hvac options
-    - resistors connected to OFF, LOW, MED, HIGH, and AC switches
+    - OFF, LOW, MED, HIGH
+- ac command
+    - discrete input with pullup resistor
+    - pulled low to request ac
 - oat
     - adc input for thermistor for ambient temp sensing
 - hvac_psi
@@ -47,7 +53,7 @@ Onboard Sensors
 - map
     - absolute pressure sensor onboard for boost control.  Analog, SPI or I2C
 - temp
-    - multiple I2C temp sensors across board to verify PCBA component / enclosure temps
+    - 3x I2C temp sensors across board to verify PCBA component / enclosure temps
 - window_current_left
     - adc for left window current sense
 - window_current_right
@@ -69,13 +75,13 @@ Outputs
     - high-side driver to power dashboard LCD screen
     - enabled in Wake, Accessory, Ignition, KeyNotDetected states
 - boost
-    - low-side driver to drive boost solenoid
+    - low-side driver to drive boost solenoid with PWM
 - fan_left
     - low-side driver to enable external relay
 - fan_right
     - low-side driver to enable external relay
 - compressor
-    - high-side driver to power AC compressor clutch coil
+    - low-side driver to power relay for AC compressor clutch coil
 - blower_a
     - low-side driver to enable external relay for blower a
     - blower control AB relays - 00 = off, 01 = low, 10 = medium, 11 = high
